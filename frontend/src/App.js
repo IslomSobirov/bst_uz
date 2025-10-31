@@ -3,15 +3,15 @@ import axios from 'axios';
 import './App.css';
 
 // Components
-import Header from './components/Header';
-import CategoryList from './components/CategoryList';
-import CreatorList from './components/CreatorList';
-import CreatorProfile from './components/CreatorProfile';
-import PostFeed from './components/PostFeed';
-import FreePosts from './components/FreePosts';
-import PostDetail from './components/PostDetail';
-import AuthModal from './components/AuthModal';
-import CreatePostModal from './components/CreatePostModal';
+import Header from './components/layout/Header';
+import CategoryList from './components/navigation/CategoryList';
+import CreatorList from './components/creators/CreatorList';
+import CreatorProfile from './components/creators/CreatorProfile';
+import PostFeed from './components/posts/PostFeed';
+import FreePosts from './components/posts/FreePosts';
+import PostDetail from './components/posts/PostDetail';
+import AuthModal from './components/modals/AuthModal';
+import CreatePostModal from './components/modals/CreatePostModal';
 
 function App() {
   const [currentView, setCurrentView] = useState('creators'); // creators, profile, feed, posts, postDetail
