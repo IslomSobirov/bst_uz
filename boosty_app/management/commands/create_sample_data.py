@@ -111,6 +111,8 @@ class Command(BaseCommand):
         for i in range(options['posts']):
             creator = random.choice(creators)
             status = random.choices(['draft', 'published', 'published'], weights=[1, 3, 1])[0]
+            # Make approximately 30% of published posts free
+            is_free = status == 'published' and random.random() < 0.3
 
             post = Post.objects.create(
                 title=fake.sentence(nb_words=6)[:-1],
@@ -119,6 +121,7 @@ class Command(BaseCommand):
                 category=random.choice(categories),
                 image=None,  # No images for now
                 status=status,
+                is_free=is_free,
             )
             posts.append(post)
 
@@ -163,7 +166,8 @@ class Command(BaseCommand):
                 f'Regular Users: {len(users)}\n'
                 f'Categories: {len(categories)}\n'
                 f'Posts: {len(posts)} (Draft: {len([p for p in posts if p.status == "draft"])}, '
-                f'Published: {len([p for p in posts if p.status == "published"])})\n'
+                f'Published: {len([p for p in posts if p.status == "published"])}, '
+                f'Free: {len([p for p in posts if p.is_free])})\n'
                 f'Comments: {len(comments)}\n'
                 f'Subscriptions: {len(subscriptions)}\n\n'
                 f'Admin credentials:\n'

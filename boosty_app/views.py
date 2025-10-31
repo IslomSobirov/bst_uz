@@ -189,14 +189,35 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Filter posts based on action and user permissions"""
         if self.action == 'list':
-            # Show only published posts for public listing
-            return Post.objects.filter(status='published')
-        elif self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
-            # Allow access to own posts or published posts
+            # Show published posts: either free posts (visible to everyone)
+            # or posts from creators the user is subscribed to
             if self.request.user.is_authenticated:
-                return Post.objects.filter(Q(author=self.request.user) | Q(status='published'))
+                # Get creators the user is subscribed to
+                subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
+                subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
+
+                # Show: free posts OR posts from subscribed creators
+                return (
+                    Post.objects.filter(status='published')
+                    .filter(Q(is_free=True) | Q(author_id__in=subscribed_author_ids))
+                    .distinct()
+                )
             else:
-                return Post.objects.filter(status='published')
+                # Unauthenticated users can only see free posts
+                return Post.objects.filter(status='published', is_free=True)
+        elif self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
+            # Allow access to own posts, free published posts, or posts from subscribed creators
+            if self.request.user.is_authenticated:
+                subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
+                subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
+
+                return Post.objects.filter(
+                    Q(author=self.request.user)
+                    | Q(status='published', is_free=True)
+                    | Q(status='published', author_id__in=subscribed_author_ids)
+                ).distinct()
+            else:
+                return Post.objects.filter(status='published', is_free=True)
         return Post.objects.all()
 
     def get_object(self):

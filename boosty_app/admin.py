@@ -37,10 +37,10 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['title', 'author', 'category', 'status', 'created_at']
-    list_filter = ['status', 'category', 'created_at', 'author']
+    list_display = ['title', 'author', 'category', 'status', 'is_free', 'created_at']
+    list_filter = ['status', 'is_free', 'category', 'created_at', 'author']
     search_fields = ['title', 'content', 'author__username']
-    list_editable = ['status']
+    list_editable = ['status', 'is_free']
     date_hierarchy = 'created_at'
 
 

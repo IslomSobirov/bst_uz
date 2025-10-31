@@ -16,6 +16,12 @@ function Header({ user, onLogin, onLogout, onCreatePost, currentView, onViewChan
             >
               Creators
             </button>
+            <button
+              className={`nav-item ${currentView === 'posts' ? 'active' : ''}`}
+              onClick={() => onViewChange('posts')}
+            >
+              Posts
+            </button>
             {user && (
               <button
                 className={`nav-item ${currentView === 'feed' ? 'active' : ''}`}

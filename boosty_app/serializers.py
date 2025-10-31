@@ -129,11 +129,11 @@ class PostSerializer(serializers.ModelSerializer):
 class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'category', 'image', 'status']
+        fields = ['title', 'content', 'category', 'image', 'status', 'is_free']
 
 
 class PostUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'category', 'image', 'status']
+        fields = ['title', 'content', 'category', 'image', 'status', 'is_free']
         read_only_fields = ['author']

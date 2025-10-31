@@ -8,13 +8,16 @@ import CategoryList from './components/CategoryList';
 import CreatorList from './components/CreatorList';
 import CreatorProfile from './components/CreatorProfile';
 import PostFeed from './components/PostFeed';
+import FreePosts from './components/FreePosts';
+import PostDetail from './components/PostDetail';
 import AuthModal from './components/AuthModal';
 import CreatePostModal from './components/CreatePostModal';
 
 function App() {
-  const [currentView, setCurrentView] = useState('creators'); // creators, profile, feed
+  const [currentView, setCurrentView] = useState('creators'); // creators, profile, feed, posts, postDetail
   const [selectedCreator, setSelectedCreator] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedPost, setSelectedPost] = useState(null);
   const [user, setUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
@@ -106,6 +109,21 @@ function App() {
     setCurrentView('feed');
   };
 
+  const handleViewPosts = () => {
+    setCurrentView('posts');
+    setSelectedPost(null);
+  };
+
+  const handlePostSelect = (post) => {
+    setSelectedPost(post);
+    setCurrentView('postDetail');
+  };
+
+  const handleBackToPosts = () => {
+    setCurrentView('posts');
+    setSelectedPost(null);
+  };
+
   const handleCreatePost = () => {
     setShowCreatePost(true);
   };
@@ -139,6 +157,21 @@ function App() {
         return (
           <PostFeed
             onBack={handleBackToCreators}
+            user={user}
+          />
+        );
+      case 'posts':
+        return (
+          <FreePosts
+            onPostSelect={handlePostSelect}
+            user={user}
+          />
+        );
+      case 'postDetail':
+        return (
+          <PostDetail
+            post={selectedPost}
+            onBack={handleBackToPosts}
             user={user}
           />
         );
