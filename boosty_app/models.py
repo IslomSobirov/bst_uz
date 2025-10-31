@@ -1,10 +1,11 @@
-from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
+from django.db import models
 
 
 class UserProfile(models.Model):
     """Extended user profile with creator capabilities"""
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     is_creator = models.BooleanField(default=False)
     bio = models.TextField(max_length=500, blank=True, validators=[MinLengthValidator(10)])
@@ -29,6 +30,7 @@ class UserProfile(models.Model):
 
 class Subscription(models.Model):
     """Subscription model for users to follow creators"""
+
     subscriber = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
     creator = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='subscribers')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,6 +45,7 @@ class Subscription(models.Model):
 
 class Category(models.Model):
     """Category model for organizing content"""
+
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -58,12 +61,13 @@ class Category(models.Model):
 
 class Post(models.Model):
     """Post model for content with draft system"""
+
     STATUS_CHOICES = [
         ('draft', 'Draft'),
         ('published', 'Published'),
         ('archived', 'Archived'),
     ]
-    
+
     title = models.CharField(max_length=200)
     content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
@@ -90,6 +94,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     """Comment model for posts"""
+
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()

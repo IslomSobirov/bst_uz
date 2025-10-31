@@ -90,6 +90,9 @@ htmlcov/
 *.cover
 .hypothesis/
 
+# Pre-commit
+.pre-commit-config.yaml.bak
+
 # nyc test coverage
 .nyc_output
 

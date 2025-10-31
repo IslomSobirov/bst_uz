@@ -4,6 +4,7 @@ Django settings for boosty_project project.
 
 import os
 from pathlib import Path
+
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -135,30 +136,39 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 
-
 # CSRF failure view override
 CSRF_FAILURE_VIEW = 'boosty_project.csrf_views.csrf_failure'
 
 # WhiteNoise settings for static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 # Development-specific settings
 if DEBUG:
     # Enable Django Debug Toolbar if available
     try:
         import debug_toolbar
+
         INSTALLED_APPS += ['debug_toolbar']
         MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
         INTERNAL_IPS = ['127.0.0.1', 'localhost', '0.0.0.0']
     except ImportError:
         pass
-    
+
     # Faster auto-reload for development
     import logging
+
     logging.getLogger('django.db.backends').setLevel(logging.INFO)
-    
+
     # Enable file watching for better auto-reload
     import os
+
     if os.environ.get('DJANGO_USE_FILE_WATCHER', 'true').lower() == 'true':
         # This will make Django watch for file changes more aggressively
         pass

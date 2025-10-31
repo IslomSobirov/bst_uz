@@ -219,13 +219,80 @@ boosty-uz/
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
+## 🔧 Code Quality & Pre-commit Hooks
+
+This project uses pre-commit hooks with pylint, black, isort, and other tools to ensure code quality.
+
+### Setup Pre-commit (Automatic on Git Commits)
+
+#### Option 1: Install in Docker Container (Recommended)
+```bash
+# Rebuild containers to include git and pre-commit dependencies
+docker-compose build backend
+
+# Install pre-commit hooks (hooks will run automatically on git commit)
+make pre-commit-install
+```
+
+#### Option 2: Install on Host Machine
+```bash
+# Install pre-commit on your machine
+pip install pre-commit
+
+# Install hooks
+pre-commit install
+```
+
+### Manual Pre-commit Execution
+
+Run pre-commit hooks manually without committing:
+```bash
+# Run on all files
+make pre-commit-run
+
+# Or directly in Docker
+docker-compose exec backend pre-commit run --all-files
+```
+
+### Individual Tools
+
+```bash
+# Run pylint only
+make lint
+
+# Format code with black and isort
+make format
+```
+
+### Update Pre-commit Hooks
+
+Keep pre-commit hooks up to date:
+```bash
+make pre-commit-update
+```
+
+### Pre-commit Configuration
+
+The project includes:
+- **Pylint**: Python code linting (Django-aware)
+- **Black**: Code formatting
+- **isort**: Import sorting
+- **django-upgrade**: Django version upgrades
+- **Standard hooks**: Trailing whitespace, end-of-file fixes, YAML/JSON validation, etc.
+
+Configuration files:
+- `.pre-commit-config.yaml`: Pre-commit hooks configuration
+- `pylintrc`: Pylint configuration for Django
+
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+3. Install pre-commit hooks (see above)
+4. Make your changes
+5. Pre-commit hooks will run automatically on `git commit`
+6. Add tests if applicable
+7. Submit a pull request
 
 ## 📄 License
 

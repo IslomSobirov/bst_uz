@@ -13,4 +13,3 @@ export const getApiUrl = (endpoint) => {
 };
 
 export default cleanBaseUrl;
-

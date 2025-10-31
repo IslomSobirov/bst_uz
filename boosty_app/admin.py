@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Category, Post, Comment, UserProfile, Subscription
+
+from .models import Category, Comment, Post, Subscription, UserProfile
 
 
 @admin.register(UserProfile)
@@ -9,14 +10,14 @@ class UserProfileAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'user__email', 'bio']
     list_editable = ['is_creator']
     date_hierarchy = 'created_at'
-    
+
+    @admin.display(description='Subscribers')
     def subscriber_count(self, obj):
         return obj.subscriber_count
-    subscriber_count.short_description = 'Subscribers'
-    
+
+    @admin.display(description='Following')
     def following_count(self, obj):
         return obj.following_count
-    following_count.short_description = 'Following'
 
 
 @admin.register(Subscription)

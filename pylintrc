@@ -1,0 +1,108 @@
+[MASTER]
+# Python code to execute, usually for sys.path manipulation
+init-hook='import sys; sys.path.append(".")'
+
+# Use multiple processes to speed up Pylint
+jobs=4
+
+# Pickle collected data for later comparisons
+persistent=yes
+
+# List of plugins (as comma separated values of python modules names)
+load-plugins=pylint_django
+
+# Django specific settings
+django-settings-module=boosty_project.settings
+
+[MESSAGES CONTROL]
+# Disable specific warnings
+disable=
+    missing-docstring,
+    too-few-public-methods,
+    too-many-instance-attributes,
+    too-many-arguments,
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    protected-access,
+    import-outside-toplevel,
+    unused-import,
+    unused-variable,
+    unused-argument,
+    redefined-outer-name,
+    no-member,
+    not-callable,
+    attribute-defined-outside-init,
+    arguments-differ,
+    abstract-method,
+    invalid-name,
+    imported-auth-user,
+    f-string-without-interpolation,
+    wrong-import-order,
+    import-self,
+    no-name-in-module,
+    ungrouped-imports,
+    no-else-return,
+    inconsistent-return-statements,
+    line-too-long,
+    duplicate-code
+
+[FORMAT]
+# Maximum number of characters on a single line
+max-line-length=120
+
+# Regexp for a line that is allowed to be longer than the limit
+ignore-long-lines=^\s*(# )?<?https?://\S+>?$
+
+[BASIC]
+# Good variable names which should always be accepted
+good-names=i,j,k,ex,Run,_,id,pk,db
+
+# Include a wildcard pattern for test files
+include-naming-hint=yes
+
+[DESIGN]
+# Maximum number of arguments for function / method
+max-args=10
+
+# Maximum number of attributes for a class
+max-attributes=15
+
+# Maximum number of boolean expressions in an if statement
+max-bool-expr=5
+
+# Maximum number of branch for function / method body
+max-branches=15
+
+# Maximum number of locals for function / method body
+max-locals=20
+
+# Maximum number of parents for a class
+max-parents=7
+
+# Maximum number of public methods for a class
+max-public-methods=25
+
+# Maximum number of return / yield for function / method body
+max-returns=6
+
+# Maximum number of statements in function / method body
+max-statements=60
+
+[IMPORTS]
+# Allow wildcard imports from modules that define __all__
+allow-wildcard-with-all=no
+
+# Analyse importable modules
+analyse-fallback-blocks=no
+
+# Allow short module names
+min-similarity-lines=4
+
+# Ignore import errors
+ignore-imports=no
+
+[EXCEPTIONS]
+# Exceptions that will emit a warning when being caught
+overgeneral-exceptions=builtins.Exception
+

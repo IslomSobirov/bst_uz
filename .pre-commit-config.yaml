@@ -1,0 +1,53 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: name-tests-test
+        args: ['--pytest-test-first']
+      - id: requirements-txt-fixer
+
+  - repo: https://github.com/PyCQA/pylint
+    rev: v3.2.3
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        args:
+          - --disable=missing-docstring,too-few-public-methods,too-many-instance-attributes,too-many-arguments,too-many-locals,too-many-branches,too-many-statements,protected-access,import-outside-toplevel,too-many-ancestors,useless-return,reimported
+          - --load-plugins=pylint_django
+          - --django-settings-module=boosty_project.settings
+          - --max-line-length=120
+        exclude: ^(migrations/|tests/|manage\.py|boosty_project/wsgi\.py|boosty_project/asgi\.py)
+
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: 1.15.0
+    hooks:
+      - id: django-upgrade
+        args: [--target-version, "4.2"]
+
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        language_version: python3.11
+        args: ['--line-length=120', '--skip-string-normalization']
+        exclude: ^(migrations|tests/|\.venv)
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black", "--line-length=120"]
+        exclude: ^(migrations|\.venv)
+
+

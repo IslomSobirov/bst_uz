@@ -1,4 +1,4 @@
-.PHONY: help test test-verbose test-coverage test-file test-specific test-failed test-auth test-profiles test-posts test-categories test-comments test-subscriptions up down restart logs shell migrate clean
+.PHONY: help test test-verbose test-coverage test-file test-specific test-failed test-auth test-profiles test-posts test-categories test-comments test-subscriptions up down restart logs shell migrate clean pre-commit-install pre-commit-run pre-commit-update lint format
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -21,6 +21,23 @@ logs: ## Show logs from all services
 
 shell: ## Open shell in backend container
 	docker-compose exec backend /bin/bash
+
+# Pre-commit hooks
+pre-commit-install: ## Install pre-commit hooks
+	docker-compose exec backend pre-commit install
+
+pre-commit-run: ## Run pre-commit hooks on all files
+	docker-compose exec backend pre-commit run --all-files
+
+pre-commit-update: ## Update pre-commit hooks
+	docker-compose exec backend pre-commit autoupdate
+
+lint: ## Run pylint on all Python files
+	docker-compose exec backend pylint boosty_app/ boosty_project/ --load-plugins=pylint_django --django-settings-module=boosty_project.settings || true
+
+format: ## Format code with black and isort
+	docker-compose exec backend black boosty_app/ boosty_project/ --line-length=120 --skip-string-normalization
+	docker-compose exec backend isort boosty_app/ boosty_project/ --profile black --line-length=120
 
 # Test commands
 test: ## Run all tests
@@ -81,4 +98,3 @@ clean: ## Clean test cache and coverage files
 
 clean-all: clean ## Clean all including Docker volumes
 	docker-compose down -v
-

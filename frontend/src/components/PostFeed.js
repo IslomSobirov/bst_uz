@@ -21,7 +21,7 @@ function PostFeed({ onBack, user }) {
         setLoading(false);
         return;
       }
-      
+
       const response = await axios.get('http://localhost:8000/api/posts/feed/', {
         headers: { Authorization: `Token ${token}` }
       });
@@ -54,7 +54,7 @@ function PostFeed({ onBack, user }) {
         <h2>My Feed</h2>
         <p>Posts from creators you follow</p>
       </div>
-      
+
       {loading ? (
         <div className="loading">
           <h3>Loading your feed...</h3>
@@ -95,9 +95,9 @@ function PostFeed({ onBack, user }) {
                       </span>
                     </div>
                   </div>
-                  
+
                   <h3 className="post-title">{post.title}</h3>
-                  
+
                   <div className="post-meta">
                     <span className="category">
                       {post.category?.name && (
@@ -109,11 +109,11 @@ function PostFeed({ onBack, user }) {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="post-content">
                   <p>{post.content.substring(0, 300)}...</p>
                 </div>
-                
+
                 <div className="post-footer">
                   <span className="comments-count">
                     💬 {post.comments_count || 0} comments

@@ -42,17 +42,17 @@ function App() {
     try {
       const response = await axios.post('http://localhost:8000/api/auth/login/', credentials);
       const { token, user: userData } = response.data;
-      
+
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Token ${token}`;
       setUser(userData);
       setShowAuthModal(false);
-      
+
       return { success: true };
     } catch (err) {
-      return { 
-        success: false, 
-        error: err.response?.data?.error || 'Login failed' 
+      return {
+        success: false,
+        error: err.response?.data?.error || 'Login failed'
       };
     }
   };
@@ -61,17 +61,17 @@ function App() {
     try {
       const response = await axios.post('http://localhost:8000/api/auth/register/', userData);
       const { token, user: newUser } = response.data;
-      
+
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Token ${token}`;
       setUser(newUser);
       setShowAuthModal(false);
-      
+
       return { success: true };
     } catch (err) {
-      return { 
-        success: false, 
-        error: err.response?.data || 'Registration failed' 
+      return {
+        success: false,
+        error: err.response?.data || 'Registration failed'
       };
     }
   };
@@ -105,7 +105,7 @@ function App() {
     switch (currentView) {
       case 'creators':
         return (
-          <CreatorList 
+          <CreatorList
             onCreatorSelect={handleCreatorSelect}
             onViewFeed={handleViewFeed}
             user={user}
@@ -113,7 +113,7 @@ function App() {
         );
       case 'profile':
         return (
-          <CreatorProfile 
+          <CreatorProfile
             creator={selectedCreator}
             onBack={handleBackToCreators}
             user={user}
@@ -127,7 +127,7 @@ function App() {
         );
       case 'feed':
         return (
-          <PostFeed 
+          <PostFeed
             onBack={handleBackToCreators}
             user={user}
           />
@@ -139,7 +139,7 @@ function App() {
 
   return (
     <div className="App">
-      <Header 
+      <Header
         user={user}
         onLogin={() => setShowAuthModal(true)}
         onLogout={handleLogout}
@@ -147,7 +147,7 @@ function App() {
         currentView={currentView}
         onViewChange={setCurrentView}
       />
-      
+
       <main className="main-content">
         {renderCurrentView()}
       </main>

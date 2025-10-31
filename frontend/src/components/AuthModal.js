@@ -77,7 +77,7 @@ function AuthModal({ onClose, onLogin, onRegister }) {
 
         <form onSubmit={handleSubmit} className="auth-form">
           {error && <div className="error-message">{error}</div>}
-          
+
           <div className="form-group">
             <label htmlFor="username">Username *</label>
             <input
@@ -187,8 +187,8 @@ function AuthModal({ onClose, onLogin, onRegister }) {
             </div>
           )}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-primary submit-btn"
             disabled={loading}
           >

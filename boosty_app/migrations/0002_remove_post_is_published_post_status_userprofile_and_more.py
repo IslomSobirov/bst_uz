@@ -21,18 +21,32 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='post',
             name='status',
-            field=models.CharField(choices=[('draft', 'Draft'), ('published', 'Published'), ('archived', 'Archived')], default='draft', max_length=20),
+            field=models.CharField(
+                choices=[('draft', 'Draft'), ('published', 'Published'), ('archived', 'Archived')],
+                default='draft',
+                max_length=20,
+            ),
         ),
         migrations.CreateModel(
             name='UserProfile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('is_creator', models.BooleanField(default=False)),
-                ('bio', models.TextField(blank=True, max_length=500, validators=[django.core.validators.MinLengthValidator(10)])),
+                (
+                    'bio',
+                    models.TextField(
+                        blank=True, max_length=500, validators=[django.core.validators.MinLengthValidator(10)]
+                    ),
+                ),
                 ('avatar', models.ImageField(blank=True, null=True, upload_to='avatars/')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    'user',
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
             options={
                 'ordering': ['-created_at'],
@@ -43,8 +57,22 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('subscriber', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='following', to=settings.AUTH_USER_MODEL)),
-                ('creator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscribers', to='boosty_app.userprofile')),
+                (
+                    'subscriber',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='following',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    'creator',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='subscribers',
+                        to='boosty_app.userprofile',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['-created_at'],

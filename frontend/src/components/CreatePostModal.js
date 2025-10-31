@@ -28,14 +28,14 @@ function CreatePostModal({ onClose, onPostCreated }) {
     try {
       const token = localStorage.getItem('token');
       console.log('Token found:', !!token);
-      
+
       if (!token) {
         console.error('No authentication token found');
         setError('No authentication token found');
         setCategoriesLoading(false);
         return;
       }
-      
+
       const response = await axios.get('http://localhost:8000/api/categories/', {
         headers: { Authorization: `Token ${token}` }
       });
@@ -95,13 +95,13 @@ function CreatePostModal({ onClose, onPostCreated }) {
 
         <div className="create-post-form">
           <p>DEBUG: Modal is rendering!</p>
-          
+
           {error && <div className="error-message">{error}</div>}
-          
+
           {loading && <div className="loading-message">Loading...</div>}
-          
+
           <p>Categories loaded: {categoriesLoading ? 'loading...' : (categories && Array.isArray(categories) ? categories.length : 'error')}</p>
-          
+
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="title">Title *</label>

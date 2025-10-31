@@ -1,6 +1,7 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import include, path
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.routers import DefaultRouter
+
 from . import views
 
 router = DefaultRouter()
@@ -12,11 +13,14 @@ router.register(r'comments', views.CommentViewSet)
 
 app_name = 'boosty_app'
 
+
 # Create a csrf_exempt wrapper for DRF auth URLs
 @csrf_exempt
 def csrf_exempt_auth(request, *args, **kwargs):
     from rest_framework.views import obtain_auth_token
+
     return obtain_auth_token(request, *args, **kwargs)
+
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -11,11 +11,11 @@ function CreatorProfile({ creator, onBack, user, onSubscribe }) {
 
   const fetchCreatorPosts = useCallback(async () => {
     if (!creator) return;
-    
+
     try {
       // Get posts by this specific creator
       const response = await axios.get(`http://localhost:8000/api/posts/`);
-      const creatorPosts = response.data.results?.filter(post => 
+      const creatorPosts = response.data.results?.filter(post =>
         post.author.id === creator.id
       ) || [];
       setPosts(creatorPosts);
@@ -29,7 +29,7 @@ function CreatorProfile({ creator, onBack, user, onSubscribe }) {
 
   const checkSubscriptionStatus = useCallback(async () => {
     if (!user || !creator) return;
-    
+
     try {
       // Check if user is subscribed to this creator
       // This would need a proper subscription check endpoint
@@ -49,7 +49,7 @@ function CreatorProfile({ creator, onBack, user, onSubscribe }) {
 
   const handleSubscribe = async () => {
     if (!user) return;
-    
+
     setSubscriptionLoading(true);
     try {
       if (isSubscribed) {
@@ -86,7 +86,7 @@ function CreatorProfile({ creator, onBack, user, onSubscribe }) {
         <button className="back-button" onClick={onBack}>
           ← Back to Creators
         </button>
-        
+
         <div className="profile-info">
           <div className="profile-avatar">
             {creator.avatar ? (
@@ -97,11 +97,11 @@ function CreatorProfile({ creator, onBack, user, onSubscribe }) {
               </div>
             )}
           </div>
-          
+
           <div className="profile-details">
             <h1 className="profile-name">{creator.username}</h1>
             <p className="profile-bio">{creator.bio || 'No bio available'}</p>
-            
+
             <div className="profile-stats">
               <div className="stat">
                 <strong>{creator.subscriber_count}</strong>
@@ -116,10 +116,10 @@ function CreatorProfile({ creator, onBack, user, onSubscribe }) {
                 <span>posts</span>
               </div>
             </div>
-            
+
             <div className="profile-actions">
               {user && user.id !== creator.id && (
-                <button 
+                <button
                   className={`btn ${isSubscribed ? 'btn-secondary' : 'btn-primary'}`}
                   onClick={handleSubscribe}
                   disabled={subscriptionLoading}
@@ -131,10 +131,10 @@ function CreatorProfile({ creator, onBack, user, onSubscribe }) {
           </div>
         </div>
       </div>
-      
+
       <div className="profile-content">
         <h2>Posts by {creator.username}</h2>
-        
+
         {loading ? (
           <div className="loading">
             <h3>Loading posts...</h3>
@@ -169,11 +169,11 @@ function CreatorProfile({ creator, onBack, user, onSubscribe }) {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="post-content">
                   <p>{post.content.substring(0, 200)}...</p>
                 </div>
-                
+
                 <div className="post-footer">
                   <span className="comments-count">
                     💬 {post.comments_count || 0} comments

@@ -10,14 +10,14 @@ function Header({ user, onLogin, onLogout, onCreatePost, currentView, onViewChan
             Boosty Uzbekistan
           </h1>
           <nav className="nav-menu">
-            <button 
+            <button
               className={`nav-item ${currentView === 'creators' ? 'active' : ''}`}
               onClick={() => onViewChange('creators')}
             >
               Creators
             </button>
             {user && (
-              <button 
+              <button
                 className={`nav-item ${currentView === 'feed' ? 'active' : ''}`}
                 onClick={() => onViewChange('feed')}
               >
@@ -26,7 +26,7 @@ function Header({ user, onLogin, onLogout, onCreatePost, currentView, onViewChan
             )}
           </nav>
         </div>
-        
+
         <div className="header-right">
           {user ? (
             <div className="user-controls">

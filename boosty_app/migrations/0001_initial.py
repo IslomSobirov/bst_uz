@@ -38,8 +38,18 @@ class Migration(migrations.Migration):
                 ('is_published', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='posts', to=settings.AUTH_USER_MODEL)),
-                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='boosty_app.category')),
+                (
+                    'author',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='posts', to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                (
+                    'category',
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='boosty_app.category'
+                    ),
+                ),
             ],
             options={
                 'ordering': ['-created_at'],
@@ -52,8 +62,20 @@ class Migration(migrations.Migration):
                 ('content', models.TextField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to=settings.AUTH_USER_MODEL)),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='boosty_app.post')),
+                (
+                    'author',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='comments',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    'post',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='boosty_app.post'
+                    ),
+                ),
             ],
             options={
                 'ordering': ['created_at'],

@@ -20,16 +20,16 @@ function CreatorList({ onCreatorSelect, onViewFeed, user }) {
       const url = getApiUrl('/api/profiles/creators/');
       console.log('Fetching creators from URL:', url);
       const response = await axios.get(url);
-      
+
       // Handle both paginated (DRF) and non-paginated responses
       const creatorsData = response.data.results || response.data || [];
       setCreators(Array.isArray(creatorsData) ? creatorsData : []);
       setLoading(false);
     } catch (err) {
-      const errorMessage = err.response?.status === 404 
+      const errorMessage = err.response?.status === 404
         ? 'Creators endpoint not found. Please check the API configuration.'
         : err.response?.data?.detail || err.message || 'Failed to fetch creators';
-      
+
       setError(errorMessage);
       setLoading(false);
       console.error('Error fetching creators:', {
@@ -72,7 +72,7 @@ function CreatorList({ onCreatorSelect, onViewFeed, user }) {
           </button>
         )}
       </div>
-      
+
       <div className="creators-grid">
         {creators.map((creator) => (
           <div key={creator.id} className="creator-card" onClick={() => onCreatorSelect(creator)}>
@@ -85,11 +85,11 @@ function CreatorList({ onCreatorSelect, onViewFeed, user }) {
                 </div>
               )}
             </div>
-            
+
             <div className="creator-info">
               <h3 className="creator-name">{creator.username}</h3>
               <p className="creator-bio">{creator.bio || 'No bio available'}</p>
-              
+
               <div className="creator-stats">
                 <span className="stat">
                   <strong>{creator.subscriber_count}</strong> subscribers
@@ -98,7 +98,7 @@ function CreatorList({ onCreatorSelect, onViewFeed, user }) {
                   <strong>{creator.following_count}</strong> following
                 </span>
               </div>
-              
+
               <div className="creator-meta">
                 <span className="creator-type">
                   {creator.is_creator ? 'Creator' : 'User'}
@@ -108,14 +108,14 @@ function CreatorList({ onCreatorSelect, onViewFeed, user }) {
                 </span>
               </div>
             </div>
-            
+
             <div className="creator-actions">
               <button className="btn btn-outline">View Profile</button>
             </div>
           </div>
         ))}
       </div>
-      
+
       {creators.length === 0 && (
         <div className="no-creators">
           <p>No creators available.</p>

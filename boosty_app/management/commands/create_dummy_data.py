@@ -1,8 +1,11 @@
-from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
-from boosty_app.models import Category, Post, Comment
-from faker import Faker
 import random
+
+from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand
+from faker import Faker
+
+from boosty_app.models import Category, Comment, Post
+
 
 class Command(BaseCommand):
     help = 'Create dummy data for testing'
@@ -15,20 +18,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         fake = Faker()
-        
+
         self.stdout.write(self.style.SUCCESS('Creating dummy data...'))
-        
+
         # Create superuser if it doesn't exist
         if not User.objects.filter(username='admin').exists():
             admin = User.objects.create_superuser(
-                username='admin',
-                email='admin@example.com',
-                password='admin123',
-                first_name='Admin',
-                last_name='User'
+                username='admin', email='admin@example.com', password='admin123', first_name='Admin', last_name='User'
             )
             self.stdout.write(self.style.SUCCESS(f'Created superuser: admin (password: admin123)'))
-        
+
         # Create users
         users = []
         for i in range(options['users']):
@@ -36,38 +35,45 @@ class Command(BaseCommand):
             # Ensure username is unique
             while User.objects.filter(username=username).exists():
                 username = fake.user_name()
-            
+
             user = User.objects.create_user(
                 username=username,
                 email=fake.email(),
                 password='password123',
                 first_name=fake.first_name(),
-                last_name=fake.last_name()
+                last_name=fake.last_name(),
             )
             users.append(user)
-        
+
         self.stdout.write(self.style.SUCCESS(f'Created {len(users)} users'))
-        
+
         # Add admin to users list
         admin_user = User.objects.get(username='admin')
         users.append(admin_user)
-        
+
         # Create categories
         categories = []
         category_names = [
-            'Technology', 'Travel', 'Food', 'Lifestyle', 'Business',
-            'Health', 'Education', 'Entertainment', 'Sports', 'Science'
+            'Technology',
+            'Travel',
+            'Food',
+            'Lifestyle',
+            'Business',
+            'Health',
+            'Education',
+            'Entertainment',
+            'Sports',
+            'Science',
         ]
-        
+
         for i in range(min(options['categories'], len(category_names))):
             category, created = Category.objects.get_or_create(
-                name=category_names[i],
-                defaults={'description': fake.text(max_nb_chars=200)}
+                name=category_names[i], defaults={'description': fake.text(max_nb_chars=200)}
             )
             categories.append(category)
-        
+
         self.stdout.write(self.style.SUCCESS(f'Created {len(categories)} categories'))
-        
+
         # Create posts
         posts = []
         for i in range(options['posts']):
@@ -76,27 +82,27 @@ class Command(BaseCommand):
                 content=fake.text(max_nb_chars=1000),
                 author=random.choice(users),
                 category=random.choice(categories),
-                is_published=random.choice([True, True, True, False])  # 75% published
+                is_published=random.choice([True, True, True, False]),  # 75% published
             )
             posts.append(post)
-        
+
         self.stdout.write(self.style.SUCCESS(f'Created {len(posts)} posts'))
-        
+
         # Create comments
         published_posts = [post for post in posts if post.is_published]
         comments = []
-        
+
         for i in range(options['comments']):
             if published_posts:  # Only create comments for published posts
                 comment = Comment.objects.create(
                     post=random.choice(published_posts),
                     author=random.choice(users),
-                    content=fake.text(max_nb_chars=300)
+                    content=fake.text(max_nb_chars=300),
                 )
                 comments.append(comment)
-        
+
         self.stdout.write(self.style.SUCCESS(f'Created {len(comments)} comments'))
-        
+
         # Summary
         self.stdout.write(
             self.style.SUCCESS(

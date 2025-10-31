@@ -1,7 +1,8 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from .models import Category, Post, Comment, UserProfile, Subscription
+from rest_framework import serializers
+
+from .models import Category, Comment, Post, Subscription, UserProfile
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -11,11 +12,22 @@ class UserProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source='user.last_name', read_only=True)
     subscriber_count = serializers.IntegerField(read_only=True)
     following_count = serializers.IntegerField(read_only=True)
-    
+
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_creator', 
-                 'bio', 'avatar', 'subscriber_count', 'following_count', 'created_at']
+        fields = [
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'is_creator',
+            'bio',
+            'avatar',
+            'subscriber_count',
+            'following_count',
+            'created_at',
+        ]
         read_only_fields = ['id', 'subscriber_count', 'following_count', 'created_at']
 
 
@@ -24,31 +36,30 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
     is_creator = serializers.BooleanField(default=False)
     bio = serializers.CharField(required=False, allow_blank=True)
-    
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password_confirm', 'first_name', 
-                 'last_name', 'is_creator', 'bio']
-    
+        fields = ['username', 'email', 'password', 'password_confirm', 'first_name', 'last_name', 'is_creator', 'bio']
+
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError("Passwords don't match")
         return attrs
-    
+
     def create(self, validated_data):
         password_confirm = validated_data.pop('password_confirm')
         is_creator = validated_data.pop('is_creator', False)
         bio = validated_data.pop('bio', '')
-        
+
         user = User.objects.create_user(**validated_data)
-        
+
         # Update user profile (signal already creates it, so just update it)
         profile = user.profile
         profile.is_creator = is_creator
         if bio:
             profile.bio = bio
         profile.save()
-        
+
         return user
 
 
@@ -60,7 +71,7 @@ class UserLoginSerializer(serializers.Serializer):
 class SubscriptionSerializer(serializers.ModelSerializer):
     creator = UserProfileSerializer(read_only=True)
     creator_id = serializers.IntegerField(write_only=True)
-    
+
     class Meta:
         model = Subscription
         fields = ['id', 'creator', 'creator_id', 'created_at']
@@ -75,14 +86,15 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Comment
         fields = '__all__'
         read_only_fields = ['author']
-    
+
     def get_author(self, obj):
         from .serializers import UserProfileSerializer
+
         # Check if author is a real user (not AnonymousUser)
         if hasattr(obj.author, 'profile'):
             return UserProfileSerializer(obj.author.profile).data
@@ -96,19 +108,20 @@ class PostSerializer(serializers.ModelSerializer):
     comments_count = serializers.SerializerMethodField()
     is_published = serializers.BooleanField(read_only=True)
     is_draft = serializers.BooleanField(read_only=True)
-    
+
     class Meta:
         model = Post
         fields = '__all__'
         read_only_fields = ['author']
-    
+
     def get_author(self, obj):
         from .serializers import UserProfileSerializer
+
         # Check if author is a real user (not AnonymousUser)
         if hasattr(obj.author, 'profile'):
             return UserProfileSerializer(obj.author.profile).data
         return None
-    
+
     def get_comments_count(self, obj):
         return obj.comments.count()
 

@@ -201,25 +201,25 @@
   .create-post-modal-overlay {
     padding: 15px;
   }
-  
+
   .create-post-modal {
     max-width: 100%;
   }
-  
+
   .modal-header,
   .create-post-form {
     padding: 20px;
   }
-  
+
   .form-actions {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .btn {
     width: 100%;
   }
-  
+
   .modal-header h2 {
     font-size: 1.5rem;
   }

@@ -187,27 +187,27 @@
   .creator-list-container {
     padding: 20px 15px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 20px;
     text-align: center;
   }
-  
+
   .page-header h2 {
     font-size: 2rem;
   }
-  
+
   .creators-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .creator-stats {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .creator-meta {
     flex-direction: column;
     gap: 10px;

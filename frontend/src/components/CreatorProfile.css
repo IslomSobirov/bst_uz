@@ -211,22 +211,22 @@
   .creator-profile-container {
     padding: 20px 15px;
   }
-  
+
   .profile-info {
     flex-direction: column;
     gap: 20px;
     text-align: center;
   }
-  
+
   .profile-name {
     font-size: 2rem;
   }
-  
+
   .profile-stats {
     justify-content: center;
     gap: 20px;
   }
-  
+
   .posts-grid {
     grid-template-columns: 1fr;
     gap: 20px;

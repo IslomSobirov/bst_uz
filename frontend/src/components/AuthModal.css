@@ -206,22 +206,22 @@
   .auth-modal-overlay {
     padding: 15px;
   }
-  
+
   .auth-modal {
     max-width: 100%;
   }
-  
+
   .modal-header,
   .auth-form,
   .modal-footer {
     padding: 20px;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
     gap: 15px;
   }
-  
+
   .modal-header h2 {
     font-size: 1.5rem;
   }

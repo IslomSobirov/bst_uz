@@ -224,26 +224,26 @@
   .post-feed-container {
     padding: 20px 15px;
   }
-  
+
   .feed-header h2 {
     font-size: 2rem;
   }
-  
+
   .posts-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .post-card {
     padding: 20px;
   }
-  
+
   .post-author {
     flex-direction: column;
     text-align: center;
     gap: 10px;
   }
-  
+
   .post-footer {
     flex-direction: column;
     gap: 15px;

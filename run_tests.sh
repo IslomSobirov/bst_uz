@@ -25,4 +25,3 @@ fi
 
 # Run tests using python -m pytest (works even if pytest executable isn't in PATH)
 docker-compose exec backend python -m pytest "$@"
-

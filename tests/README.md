@@ -224,4 +224,3 @@ docker-compose exec backend python -m pytest --create-db
 - Tests use separate test database (configured via pytest.ini)
 - All API endpoints are tested with both authenticated and unauthenticated requests
 - Tests run in the same Docker container as your backend, ensuring consistent environment
-

@@ -3,10 +3,10 @@ Pytest configuration and fixtures for API tests
 """
 import pytest
 from django.contrib.auth.models import User
-from rest_framework.test import APIClient
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
 
-from boosty_app.models import UserProfile, Category, Post, Comment, Subscription
+from boosty_app.models import Category, Comment, Post, Subscription, UserProfile
 
 
 @pytest.fixture
@@ -143,4 +143,3 @@ def multiple_posts(db, creator, category):
         )
         posts.append(post)
     return posts
-
