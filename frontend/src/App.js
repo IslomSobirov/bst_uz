@@ -4,6 +4,7 @@ import './App.css';
 
 // Components
 import Header from './components/Header';
+import CategoryList from './components/CategoryList';
 import CreatorList from './components/CreatorList';
 import CreatorProfile from './components/CreatorProfile';
 import PostFeed from './components/PostFeed';
@@ -13,6 +14,7 @@ import CreatePostModal from './components/CreatePostModal';
 function App() {
   const [currentView, setCurrentView] = useState('creators'); // creators, profile, feed
   const [selectedCreator, setSelectedCreator] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [user, setUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
@@ -91,6 +93,13 @@ function App() {
   const handleBackToCreators = () => {
     setCurrentView('creators');
     setSelectedCreator(null);
+    setSelectedCategory(null);
+  };
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setCurrentView('creators');
+    setSelectedCreator(null);
   };
 
   const handleViewFeed = () => {
@@ -109,6 +118,7 @@ function App() {
             onCreatorSelect={handleCreatorSelect}
             onViewFeed={handleViewFeed}
             user={user}
+            selectedCategory={selectedCategory}
           />
         );
       case 'profile':
@@ -146,6 +156,11 @@ function App() {
         onCreatePost={handleCreatePost}
         currentView={currentView}
         onViewChange={setCurrentView}
+      />
+
+      <CategoryList
+        onCategorySelect={handleCategorySelect}
+        selectedCategory={selectedCategory}
       />
 
       <main className="main-content">

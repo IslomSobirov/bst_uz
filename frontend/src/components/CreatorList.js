@@ -3,21 +3,24 @@ import axios from 'axios';
 import { getApiUrl } from '../config/api';
 import './CreatorList.css';
 
-function CreatorList({ onCreatorSelect, onViewFeed, user }) {
+function CreatorList({ onCreatorSelect, onViewFeed, user, selectedCategory }) {
   const [creators, setCreators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchCreators();
-  }, []);
+  }, [selectedCategory]);
 
   const fetchCreators = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Ensure we use the correct URL format - with leading slash for relative URLs
-      const url = getApiUrl('/api/profiles/creators/');
+      // Build URL with category filter if selected
+      let url = getApiUrl('/api/profiles/creators/');
+      if (selectedCategory) {
+        url += `?category=${selectedCategory.id}`;
+      }
       console.log('Fetching creators from URL:', url);
       const response = await axios.get(url);
 
@@ -65,7 +68,9 @@ function CreatorList({ onCreatorSelect, onViewFeed, user }) {
   return (
     <div className="creator-list-container">
       <div className="page-header">
-        <h2>Discover Creators</h2>
+        <h2>
+          {selectedCategory ? `Creators in ${selectedCategory.name}` : 'Discover Creators'}
+        </h2>
         {user && (
           <button className="btn btn-primary" onClick={onViewFeed}>
             View My Feed

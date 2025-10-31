@@ -119,8 +119,15 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
     def creators(self, request):
-        """Get list of all creators"""
+        """Get list of all creators, optionally filtered by category"""
         creators = UserProfile.objects.filter(is_creator=True)
+
+        # Filter by category if provided
+        category_id = request.query_params.get('category', None)
+        if category_id:
+            # Get creators who have published posts in this category
+            creators = creators.filter(user__posts__category_id=category_id, user__posts__status='published').distinct()
+
         serializer = self.get_serializer(creators, many=True)
         return Response(serializer.data)
 
