@@ -1,0 +1,72 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+  push:
+    branches:
+      - main
+      - master
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: boosty_db
+          POSTGRES_USER: boosty_user
+          POSTGRES_PASSWORD: boosty_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set up environment variables
+        run: |
+          echo "POSTGRES_DB=boosty_db" >> $GITHUB_ENV
+          echo "POSTGRES_USER=boosty_user" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=boosty_password" >> $GITHUB_ENV
+          echo "POSTGRES_HOST=localhost" >> $GITHUB_ENV
+          echo "POSTGRES_PORT=5432" >> $GITHUB_ENV
+          echo "DJANGO_SETTINGS_MODULE=boosty_project.settings" >> $GITHUB_ENV
+          echo "SECRET_KEY=test-secret-key-for-ci-cd" >> $GITHUB_ENV
+          echo "DEBUG=False" >> $GITHUB_ENV
+
+      - name: Run database migrations
+        run: |
+          python manage.py migrate --noinput
+
+      - name: Run tests
+        run: |
+          python -m pytest --cov=boosty_app --cov-report=term-missing --cov-report=xml --tb=short
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
