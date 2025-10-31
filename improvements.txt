@@ -1,0 +1,15 @@
+Testing: add unit and integration tests
+API documentation: add OpenAPI/Swagger (drf-spectacular)
+Production config: separate prod/dev settings
+Error handling: consistent API error responses
+Performance: add database indexes, consider caching
+Security: add rate limiting, token refresh, input validation
+CI/CD: add GitHub Actions or similar
+
+
+Logging
+
+No test coverage
+Limited documentation (API docs could be auto-generated with drf-spectacular)
+No logging configuration visible
+Production readiness: ensure DEBUG=False, proper SECRET_KEY, etc.
