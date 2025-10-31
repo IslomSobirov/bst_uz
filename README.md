@@ -114,25 +114,39 @@ docker-compose up --build
 
 ## 🔧 Development
 
+### Quick Commands (Makefile)
+
+```bash
+make help              # Show all available commands
+make up                # Start all services
+make down              # Stop all services
+make restart           # Restart services
+make logs              # Show logs
+make shell             # Open shell in backend container
+make migrate           # Run database migrations
+make createsuperuser   # Create Django superuser
+```
+
+### Testing
+
+```bash
+make test              # Run all tests
+make test-coverage     # Run tests with coverage
+make test-auth         # Run authentication tests
+make test-profiles     # Run profile tests
+make test-posts        # Run post tests
+# ... see `make help` for more
+```
+
 ### Running Django commands
 ```bash
+# Using Makefile
+make migrate           # Run migrations
+make makemigrations    # Create migrations
+make shell-django      # Django shell
+
+# Or directly
 docker-compose exec backend python manage.py [command]
-```
-
-### Creating Django superuser
-```bash
-docker-compose exec backend python manage.py createsuperuser
-```
-
-### Running migrations
-```bash
-docker-compose exec backend python manage.py makemigrations
-docker-compose exec backend python manage.py migrate
-```
-
-### Collecting static files
-```bash
-docker-compose exec backend python manage.py collectstatic
 ```
 
 ## 🌐 Environment Variables

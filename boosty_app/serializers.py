@@ -42,12 +42,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         
         user = User.objects.create_user(**validated_data)
         
-        # Create user profile
-        UserProfile.objects.create(
-            user=user,
-            is_creator=is_creator,
-            bio=bio
-        )
+        # Update user profile (signal already creates it, so just update it)
+        profile = user.profile
+        profile.is_creator = is_creator
+        if bio:
+            profile.bio = bio
+        profile.save()
         
         return user
 
@@ -83,7 +83,10 @@ class CommentSerializer(serializers.ModelSerializer):
     
     def get_author(self, obj):
         from .serializers import UserProfileSerializer
-        return UserProfileSerializer(obj.author.profile).data
+        # Check if author is a real user (not AnonymousUser)
+        if hasattr(obj.author, 'profile'):
+            return UserProfileSerializer(obj.author.profile).data
+        return None
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -101,7 +104,10 @@ class PostSerializer(serializers.ModelSerializer):
     
     def get_author(self, obj):
         from .serializers import UserProfileSerializer
-        return UserProfileSerializer(obj.author.profile).data
+        # Check if author is a real user (not AnonymousUser)
+        if hasattr(obj.author, 'profile'):
+            return UserProfileSerializer(obj.author.profile).data
+        return None
     
     def get_comments_count(self, obj):
         return obj.comments.count()

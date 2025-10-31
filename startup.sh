@@ -34,6 +34,12 @@ print("❌ Database connection failed after maximum attempts")
 sys.exit(1)
 END
 
+# Install test dependencies if needed (in case volumes override installed packages)
+if ! python -m pytest --version > /dev/null 2>&1; then
+    echo "📦 Installing test dependencies..."
+    pip install -q pytest pytest-django pytest-cov pytest-factoryboy factory-boy
+fi
+
 # Run migrations
 echo "📦 Running database migrations..."
 python manage.py migrate --noinput

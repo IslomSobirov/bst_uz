@@ -83,6 +83,13 @@ pids
 # Coverage directory used by tools like istanbul
 coverage/
 
+# Python testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
 # nyc test coverage
 .nyc_output
 
