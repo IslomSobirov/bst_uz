@@ -305,7 +305,46 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    def get_queryset(self):
+        """Filter comments based on post visibility"""
+        # Comments are only visible if their post is visible
+        if self.request.user.is_authenticated:
+            # Get creators the user is subscribed to
+            subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
+            subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
+
+            # Comments on posts that are: free, from subscribed creators, or owned by user
+            return Comment.objects.filter(
+                Q(post__status='published', post__is_free=True)
+                | Q(post__status='published', post__author_id__in=subscribed_author_ids)
+                | Q(post__author=self.request.user)
+            ).distinct()
+        else:
+            # Unauthenticated users can only see comments on free posts
+            return Comment.objects.filter(post__status='published', post__is_free=True)
+
     def perform_create(self, serializer):
+        # Check if user can access the post before creating comment
+        post = serializer.validated_data.get('post')
+        if post:
+            # Users can always comment on their own posts
+            if post.author == self.request.user:
+                serializer.save(author=self.request.user)
+                return
+
+            # Check if post is accessible for other users
+            if self.request.user.is_authenticated:
+                subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
+                subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
+                if not (post.status == 'published' and (post.is_free or post.author_id in subscribed_author_ids)):
+                    from rest_framework.exceptions import PermissionDenied
+
+                    raise PermissionDenied("You cannot comment on this post")
+            else:
+                if not (post.status == 'published' and post.is_free):
+                    from rest_framework.exceptions import PermissionDenied
+
+                    raise PermissionDenied("You cannot comment on this post")
         serializer.save(author=self.request.user)
 
     def get_object(self):

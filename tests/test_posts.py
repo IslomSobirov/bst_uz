@@ -25,6 +25,9 @@ class TestPostList:
         response = api_client.get('/api/posts/')
 
         assert response.status_code == status.HTTP_200_OK
+        # Unauthenticated users should only see free posts
+        post_ids = [post['id'] for post in response.data['results']]
+        assert published_post.id in post_ids
 
     def test_list_posts_authenticated(self, authenticated_client, published_post):
         """Test listing posts with authentication"""
@@ -50,6 +53,35 @@ class TestPostCreate:
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data['title'] == 'New Post'
         assert response.data['status'] == 'draft'
+        assert response.data['is_free'] is False  # Default value
+
+    def test_create_post_with_is_free(self, creator_client, category):
+        """Test creating a post with is_free field"""
+        data = {
+            'title': 'Free Post',
+            'content': 'This is a free post',
+            'category': category.id,
+            'status': 'published',
+            'is_free': True
+        }
+        response = creator_client.post('/api/posts/', data, format='json')
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data['is_free'] is True
+
+    def test_create_post_with_is_free_false(self, creator_client, category):
+        """Test creating a post with is_free=False"""
+        data = {
+            'title': 'Paid Post',
+            'content': 'This is a paid post',
+            'category': category.id,
+            'status': 'published',
+            'is_free': False
+        }
+        response = creator_client.post('/api/posts/', data, format='json')
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data['is_free'] is False
 
     def test_create_post_as_regular_user(self, authenticated_client, category):
         """Test creating a post as regular user (should fail)"""
@@ -126,6 +158,20 @@ class TestPostDetail:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data['title'] == 'Updated Title'
+
+    def test_update_post_is_free(self, creator_client, draft_post):
+        """Test updating is_free field of a post"""
+        data = {'is_free': True}
+        response = creator_client.patch(f'/api/posts/{draft_post.id}/', data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['is_free'] is True
+
+        # Update back to False
+        data = {'is_free': False}
+        response = creator_client.patch(f'/api/posts/{draft_post.id}/', data, format='json')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['is_free'] is False
 
     def test_update_other_post(self, authenticated_client, published_post):
         """Test updating someone else's post (should fail)"""
@@ -250,3 +296,79 @@ class TestPostComments:
         assert response.status_code == status.HTTP_200_OK
         assert len(response.data) == 1
         assert response.data[0]['content'] == comment.content
+
+
+@pytest.mark.django_db
+class TestPostIsFree:
+    """Test is_free field functionality"""
+
+    def test_free_post_visible_to_unauthenticated(self, api_client, free_post, paid_post):
+        """Test that free posts are visible to unauthenticated users"""
+        response = api_client.get('/api/posts/')
+
+        assert response.status_code == status.HTTP_200_OK
+        post_ids = [post['id'] for post in response.data['results']]
+        assert free_post.id in post_ids
+        assert paid_post.id not in post_ids
+
+    def test_free_post_detail_visible_to_unauthenticated(self, api_client, free_post):
+        """Test that free post detail is accessible to unauthenticated users"""
+        response = api_client.get(f'/api/posts/{free_post.id}/')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['title'] == free_post.title
+        assert response.data['is_free'] is True
+
+    def test_paid_post_not_visible_to_unauthenticated(self, api_client, paid_post):
+        """Test that paid posts are not visible to unauthenticated users"""
+        response = api_client.get('/api/posts/')
+
+        assert response.status_code == status.HTTP_200_OK
+        post_ids = [post['id'] for post in response.data['results']]
+        assert paid_post.id not in post_ids
+
+    def test_paid_post_detail_not_accessible_to_unauthenticated(self, api_client, paid_post):
+        """Test that paid post detail is not accessible to unauthenticated users"""
+        response = api_client.get(f'/api/posts/{paid_post.id}/')
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_paid_post_visible_to_subscriber(self, authenticated_client, user, creator, paid_post, subscription):
+        """Test that paid posts are visible to subscribers"""
+        response = authenticated_client.get('/api/posts/')
+
+        assert response.status_code == status.HTTP_200_OK
+        post_ids = [post['id'] for post in response.data['results']]
+        assert paid_post.id in post_ids
+
+    def test_paid_post_detail_accessible_to_subscriber(self, authenticated_client, user, creator, paid_post, subscription):
+        """Test that paid post detail is accessible to subscribers"""
+        response = authenticated_client.get(f'/api/posts/{paid_post.id}/')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['title'] == paid_post.title
+        assert response.data['is_free'] is False
+
+    def test_paid_post_not_visible_to_non_subscriber(self, authenticated_client, user, paid_post):
+        """Test that paid posts are not visible to non-subscribers"""
+        response = authenticated_client.get('/api/posts/')
+
+        assert response.status_code == status.HTTP_200_OK
+        post_ids = [post['id'] for post in response.data['results']]
+        assert paid_post.id not in post_ids
+
+    def test_free_post_visible_to_non_subscriber(self, authenticated_client, user, free_post):
+        """Test that free posts are visible to authenticated non-subscribers"""
+        response = authenticated_client.get('/api/posts/')
+
+        assert response.status_code == status.HTTP_200_OK
+        post_ids = [post['id'] for post in response.data['results']]
+        assert free_post.id in post_ids
+
+    def test_post_serializer_includes_is_free(self, api_client, free_post):
+        """Test that post serializer includes is_free field"""
+        response = api_client.get(f'/api/posts/{free_post.id}/')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert 'is_free' in response.data
+        assert response.data['is_free'] is True

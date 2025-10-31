@@ -71,13 +71,14 @@ def category(db):
 
 @pytest.fixture
 def published_post(db, creator, category):
-    """Create a published post"""
+    """Create a published post (free by default for visibility in tests)"""
     return Post.objects.create(
         title='Test Published Post',
         content='This is the content of a published post',
         author=creator,
         category=category,
-        status='published'
+        status='published',
+        is_free=True
     )
 
 
@@ -143,3 +144,29 @@ def multiple_posts(db, creator, category):
         )
         posts.append(post)
     return posts
+
+
+@pytest.fixture
+def free_post(db, creator, category):
+    """Create a free published post"""
+    return Post.objects.create(
+        title='Free Post',
+        content='This is a free post visible to everyone',
+        author=creator,
+        category=category,
+        status='published',
+        is_free=True
+    )
+
+
+@pytest.fixture
+def paid_post(db, creator, category):
+    """Create a paid (non-free) published post"""
+    return Post.objects.create(
+        title='Paid Post',
+        content='This is a paid post only visible to subscribers',
+        author=creator,
+        category=category,
+        status='published',
+        is_free=False
+    )
