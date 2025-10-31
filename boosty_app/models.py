@@ -25,7 +25,7 @@ class UserProfile(models.Model):
 
     @property
     def following_count(self):
-        return self.following.count()
+        return self.user.following.count()
 
 
 class Subscription(models.Model):
