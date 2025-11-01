@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { getApiUrl } from '../config/api';
+import { getApiUrl } from '../../config/api';
 import './CategoryList.css';
 
 function CategoryList({ onCategorySelect, selectedCategory }) {
