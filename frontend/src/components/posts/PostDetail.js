@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { getApiUrl } from '../config/api';
+import { getApiUrl } from '../../config/api';
 import './PostDetail.css';
 
 function PostDetail({ post, onBack, user }) {
@@ -10,13 +10,7 @@ function PostDetail({ post, onBack, user }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (post) {
-      fetchComments();
-    }
-  }, [post]);
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     if (!post) return;
     try {
       setLoading(true);
@@ -28,7 +22,13 @@ function PostDetail({ post, onBack, user }) {
       setLoading(false);
       console.error('Error fetching comments:', err);
     }
-  };
+  }, [post]);
+
+  useEffect(() => {
+    if (post) {
+      fetchComments();
+    }
+  }, [post, fetchComments]);
 
   const handleSubmitComment = async (e) => {
     e.preventDefault();

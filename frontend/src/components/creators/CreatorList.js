@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { getApiUrl } from '../config/api';
+import { getApiUrl } from '../../config/api';
 import './CreatorList.css';
 
 function CreatorList({ onCreatorSelect, onViewFeed, user, selectedCategory }) {
@@ -8,11 +8,7 @@ function CreatorList({ onCreatorSelect, onViewFeed, user, selectedCategory }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchCreators();
-  }, [selectedCategory]);
-
-  const fetchCreators = async () => {
+  const fetchCreators = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -42,7 +38,11 @@ function CreatorList({ onCreatorSelect, onViewFeed, user, selectedCategory }) {
         url: getApiUrl('api/profiles/creators/')
       });
     }
-  };
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    fetchCreators();
+  }, [fetchCreators]);
 
   if (loading) {
     return (

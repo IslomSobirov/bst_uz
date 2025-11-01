@@ -109,11 +109,6 @@ function App() {
     setCurrentView('feed');
   };
 
-  const handleViewPosts = () => {
-    setCurrentView('posts');
-    setSelectedPost(null);
-  };
-
   const handlePostSelect = (post) => {
     setSelectedPost(post);
     setCurrentView('postDetail');
