@@ -280,6 +280,94 @@
             font-size: 4rem;
             margin-bottom: 1rem;
         }
+
+        /* Action buttons styling */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .action-form {
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.9rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            background: transparent;
+        }
+
+        .action-icon {
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .action-text {
+            line-height: 1;
+        }
+
+        .action-btn-view {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .action-btn-view:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.2);
+        }
+
+        .action-btn-edit {
+            color: #6c757d;
+            background: rgba(108, 117, 125, 0.1);
+            border: 1px solid rgba(108, 117, 125, 0.2);
+        }
+
+        .action-btn-edit:hover {
+            background: rgba(108, 117, 125, 0.15);
+            border-color: rgba(108, 117, 125, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(108, 117, 125, 0.2);
+        }
+
+        .action-btn-delete {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .action-btn-delete:hover {
+            background: rgba(220, 53, 69, 0.15);
+            border-color: rgba(220, 53, 69, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Make table action column wider for better button display */
+        .table td:last-child {
+            width: 200px;
+            min-width: 200px;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>

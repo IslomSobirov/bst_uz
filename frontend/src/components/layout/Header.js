@@ -1,7 +1,7 @@
 import React from 'react';
 import './Header.css';
 
-function Header({ user, onLogin, onLogout, onCreatePost, currentView, onViewChange }) {
+function Header({ user, onLogin, onLogout, currentView, onViewChange }) {
   return (
     <header className="header">
       <div className="header-content">
@@ -36,13 +36,17 @@ function Header({ user, onLogin, onLogout, onCreatePost, currentView, onViewChan
         <div className="header-right">
           {user ? (
             <div className="user-controls">
-              {user.is_creator && (
-                <button className="btn btn-primary" onClick={onCreatePost}>
-                  Create Post
-                </button>
-              )}
               <div className="user-info">
-                <span className="username">{user.username}</span>
+                {user.is_creator ? (
+                  <span
+                    className="username clickable"
+                    onClick={() => onViewChange('myProfile')}
+                  >
+                    {user.username}
+                  </span>
+                ) : (
+                  <span className="username">{user.username}</span>
+                )}
                 {user.is_creator && <span className="creator-badge">Creator</span>}
                 <button className="btn btn-secondary" onClick={onLogout}>
                   Logout

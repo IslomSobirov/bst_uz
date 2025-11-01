@@ -44,16 +44,31 @@
                         {% endif %}
                     </td>
                     <td>
-                        <span class="badge badge-secondary">{% trans "Subscriber Only" %}</span>
+                        {% if post.is_free %}
+                            <span class="badge badge-success">{% trans "Free" %}</span>
+                        {% else %}
+                            <span class="badge badge-secondary">{% trans "Subscriber Only" %}</span>
+                        {% endif %}
                     </td>
                     <td class="text-muted">{{ post.created_at|date:"M d, Y" }}</td>
                     <td>
-                        <a href="{% url 'creator:view_post' post.id %}" class="btn btn-primary btn-small">{% trans "View" %}</a>
-                        <a href="{% url 'creator:edit_post' post.id %}" class="btn btn-secondary btn-small">{% trans "Edit" %}</a>
-                        <form method="post" action="{% url 'creator:delete_post' post.id %}" style="display: inline-block; margin-left: 0.5rem;" onsubmit="return confirm('{% trans "Are you sure you want to delete this post?" %}');">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-small">{% trans "Delete" %}</button>
-                        </form>
+                        <div class="action-buttons">
+                            <a href="{% url 'creator:view_post' post.id %}" class="action-btn action-btn-view" title="{% trans 'View' %}">
+                                <span class="action-icon">👁️</span>
+                                <span class="action-text">{% trans "View" %}</span>
+                            </a>
+                            <a href="{% url 'creator:edit_post' post.id %}" class="action-btn action-btn-edit" title="{% trans 'Edit' %}">
+                                <span class="action-icon">✏️</span>
+                                <span class="action-text">{% trans "Edit" %}</span>
+                            </a>
+                            <form method="post" action="{% url 'creator:delete_post' post.id %}" class="action-form" onsubmit="return confirm('{% trans "Are you sure you want to delete this post?" %}');">
+                                {% csrf_token %}
+                                <button type="submit" class="action-btn action-btn-delete" title="{% trans 'Delete' %}">
+                                    <span class="action-icon">🗑️</span>
+                                    <span class="action-text">{% trans "Delete" %}</span>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

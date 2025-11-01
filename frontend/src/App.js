@@ -93,6 +93,14 @@ function App() {
     setCurrentView('profile');
   };
 
+  const handleViewMyProfile = () => {
+    if (user && user.is_creator) {
+      // Set the user's profile as selected creator
+      setSelectedCreator(user);
+      setCurrentView('profile');
+    }
+  };
+
   const handleBackToCreators = () => {
     setCurrentView('creators');
     setSelectedCreator(null);
@@ -140,6 +148,7 @@ function App() {
             creator={selectedCreator}
             onBack={handleBackToCreators}
             user={user}
+            onCreatePost={handleCreatePost}
             onSubscribe={() => {
               // Refresh creator data
               if (selectedCreator) {
@@ -181,9 +190,14 @@ function App() {
         user={user}
         onLogin={() => setShowAuthModal(true)}
         onLogout={handleLogout}
-        onCreatePost={handleCreatePost}
         currentView={currentView}
-        onViewChange={setCurrentView}
+        onViewChange={(view) => {
+          if (view === 'myProfile') {
+            handleViewMyProfile();
+          } else {
+            setCurrentView(view);
+          }
+        }}
       />
 
       <CategoryList

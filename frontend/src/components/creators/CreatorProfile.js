@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './CreatorProfile.css';
 
-function CreatorProfile({ creator, onBack, user, onSubscribe }) {
+function CreatorProfile({ creator, onBack, user, onSubscribe, onCreatePost }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -118,6 +118,15 @@ function CreatorProfile({ creator, onBack, user, onSubscribe }) {
             </div>
 
             <div className="profile-actions">
+              {user && user.id === creator.id && user.is_creator && onCreatePost && (
+                <button
+                  className="btn btn-primary"
+                  onClick={onCreatePost}
+                  style={{ marginRight: '10px' }}
+                >
+                  Create Post
+                </button>
+              )}
               {user && user.id !== creator.id && (
                 <button
                   className={`btn ${isSubscribed ? 'btn-secondary' : 'btn-primary'}`}

@@ -85,6 +85,18 @@
   font-size: 0.9rem;
 }
 
+.username.clickable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.username.clickable:hover {
+  background: rgba(255, 255, 255, 0.1);
+  text-decoration: underline;
+}
+
 .creator-badge {
   background: rgba(255, 255, 255, 0.2);
   padding: 4px 8px;
