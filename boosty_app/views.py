@@ -187,37 +187,30 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        """Filter posts based on action and user permissions"""
+        """Filter posts - only show to subscribers of the creator"""
         if self.action == 'list':
-            # Show published posts: either free posts (visible to everyone)
-            # or posts from creators the user is subscribed to
+            # Only show published posts from creators the user is subscribed to
             if self.request.user.is_authenticated:
                 # Get creators the user is subscribed to
                 subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
                 subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
 
-                # Show: free posts OR posts from subscribed creators
-                return (
-                    Post.objects.filter(status='published')
-                    .filter(Q(is_free=True) | Q(author_id__in=subscribed_author_ids))
-                    .distinct()
-                )
+                # Only show posts from subscribed creators
+                return Post.objects.filter(status='published', author_id__in=subscribed_author_ids).distinct()
             else:
-                # Unauthenticated users can only see free posts
-                return Post.objects.filter(status='published', is_free=True)
+                # Unauthenticated users cannot see any posts
+                return Post.objects.none()
         elif self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
-            # Allow access to own posts, free published posts, or posts from subscribed creators
+            # Allow access to own posts or posts from subscribed creators
             if self.request.user.is_authenticated:
                 subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
                 subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
 
                 return Post.objects.filter(
-                    Q(author=self.request.user)
-                    | Q(status='published', is_free=True)
-                    | Q(status='published', author_id__in=subscribed_author_ids)
+                    Q(author=self.request.user) | Q(status='published', author_id__in=subscribed_author_ids)
                 ).distinct()
             else:
-                return Post.objects.filter(status='published', is_free=True)
+                return Post.objects.none()
         return Post.objects.all()
 
     def get_object(self):
@@ -306,22 +299,21 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        """Filter comments based on post visibility"""
-        # Comments are only visible if their post is visible
+        """Filter comments - only show comments on posts from subscribed creators"""
+        # Comments are only visible if their post is from a subscribed creator
         if self.request.user.is_authenticated:
             # Get creators the user is subscribed to
             subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
             subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
 
-            # Comments on posts that are: free, from subscribed creators, or owned by user
+            # Comments on posts from subscribed creators or own posts
             return Comment.objects.filter(
-                Q(post__status='published', post__is_free=True)
-                | Q(post__status='published', post__author_id__in=subscribed_author_ids)
+                Q(post__status='published', post__author_id__in=subscribed_author_ids)
                 | Q(post__author=self.request.user)
             ).distinct()
         else:
-            # Unauthenticated users can only see comments on free posts
-            return Comment.objects.filter(post__status='published', post__is_free=True)
+            # Unauthenticated users cannot see any comments
+            return Comment.objects.none()
 
     def perform_create(self, serializer):
         # Check if user can access the post before creating comment
@@ -332,19 +324,18 @@ class CommentViewSet(viewsets.ModelViewSet):
                 serializer.save(author=self.request.user)
                 return
 
-            # Check if post is accessible for other users
+            # Check if post is accessible for other users (must be subscriber)
             if self.request.user.is_authenticated:
                 subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
                 subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
-                if not (post.status == 'published' and (post.is_free or post.author_id in subscribed_author_ids)):
+                if not (post.status == 'published' and post.author_id in subscribed_author_ids):
                     from rest_framework.exceptions import PermissionDenied
 
-                    raise PermissionDenied("You cannot comment on this post")
+                    raise PermissionDenied("You must be a subscriber to comment on this post")
             else:
-                if not (post.status == 'published' and post.is_free):
-                    from rest_framework.exceptions import PermissionDenied
+                from rest_framework.exceptions import PermissionDenied
 
-                    raise PermissionDenied("You cannot comment on this post")
+                raise PermissionDenied("You must be logged in and subscribed to comment on this post")
         serializer.save(author=self.request.user)
 
     def get_object(self):

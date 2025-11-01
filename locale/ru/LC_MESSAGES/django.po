@@ -1,0 +1,243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10>=5 || n%10==0 || "
+"(n%100>=11 && n%100<=14) ? 2 : 3);\n"
+
+msgid "Creator Dashboard"
+msgstr "Панель создателя"
+
+msgid "Dashboard"
+msgstr "Панель управления"
+
+msgid "Posts"
+msgstr "Посты"
+
+msgid "Comments"
+msgstr "Комментарии"
+
+msgid "Subscribers"
+msgstr "Подписчики"
+
+msgid "Admin"
+msgstr "Админ"
+
+msgid "Logout"
+msgstr "Выход"
+
+msgid "Welcome back"
+msgstr "С возвращением"
+
+msgid "Total Posts"
+msgstr "Всего постов"
+
+msgid "Published"
+msgstr "Опубликовано"
+
+msgid "Drafts"
+msgstr "Черновики"
+
+msgid "Recent Posts"
+msgstr "Недавние посты"
+
+msgid "View All"
+msgstr "Посмотреть все"
+
+msgid "Title"
+msgstr "Заголовок"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Created"
+msgstr "Создано"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "No posts yet. Create your first post!"
+msgstr "Пока нет постов. Создайте свой первый пост!"
+
+msgid "Create Post"
+msgstr "Создать пост"
+
+msgid "Recent Comments"
+msgstr "Недавние комментарии"
+
+msgid "Post"
+msgstr "Пост"
+
+msgid "Author"
+msgstr "Автор"
+
+msgid "Comment"
+msgstr "Комментарий"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "No comments yet."
+msgstr "Пока нет комментариев."
+
+msgid "Recent Subscribers"
+msgstr "Недавние подписчики"
+
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "Subscribed On"
+msgstr "Подписался"
+
+msgid "No subscribers yet. Keep creating great content!"
+msgstr "Пока нет подписчиков. Продолжайте создавать отличный контент!"
+
+msgid "My Posts"
+msgstr "Мои посты"
+
+msgid "Create New Post"
+msgstr "Создать новый пост"
+
+msgid "All"
+msgstr "Все"
+
+msgid "Archived"
+msgstr "Архивировано"
+
+msgid "Category"
+msgstr "Категория"
+
+msgid "Visibility"
+msgstr "Видимость"
+
+msgid "Subscriber Only"
+msgstr "Только для подписчиков"
+
+msgid "View"
+msgstr "Просмотр"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Are you sure you want to delete this post?"
+msgstr "Вы уверены, что хотите удалить этот пост?"
+
+msgid "No posts found"
+msgstr "Посты не найдены"
+
+msgid "with status"
+msgstr "со статусом"
+
+msgid "Create Your First Post"
+msgstr "Создайте свой первый пост"
+
+msgid "Comments on My Posts"
+msgstr "Комментарии к моим постам"
+
+msgid "No comments yet on your posts."
+msgstr "Пока нет комментариев к вашим постам."
+
+msgid "Create"
+msgstr "Создать"
+
+msgid "Back to Posts"
+msgstr "Назад к постам"
+
+msgid "Content"
+msgstr "Содержание"
+
+msgid "Image"
+msgstr "Изображение"
+
+msgid "Current image"
+msgstr "Текущее изображение"
+
+msgid "Save Post"
+msgstr "Сохранить пост"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "No comments yet on this post."
+msgstr "Пока нет комментариев к этому посту."
+
+msgid "My Subscribers"
+msgstr "Мои подписчики"
+
+msgid "Email"
+msgstr "Электронная почта"
+
+msgid "You don't have any subscribers yet. Keep creating great content to attract subscribers!"
+msgstr "У вас пока нет подписчиков. Продолжайте создавать отличный контент, чтобы привлечь подписчиков!"
+
+msgid "Access Denied"
+msgstr "Доступ запрещен"
+
+msgid "You must be a creator to access this page."
+msgstr "Вы должны быть создателем для доступа к этой странице."
+
+msgid "To enable creator mode:"
+msgstr "Чтобы включить режим создателя:"
+
+msgid "Go to"
+msgstr "Перейдите в"
+
+msgid "Django Admin"
+msgstr "Админ-панель Django"
+
+msgid "Navigate to"
+msgstr "Перейдите к"
+
+msgid "Boosty App → User profiles"
+msgstr "Приложение Boosty → Профили пользователей"
+
+msgid "Find your user profile (username:"
+msgstr "Найдите свой профиль пользователя (имя пользователя:"
+
+msgid "Check the"
+msgstr "Установите флажок"
+
+msgid "Is creator"
+msgstr "Является создателем"
+
+msgid "checkbox"
+msgstr ""
+
+msgid "Click"
+msgstr "Нажмите"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Come back to this page"
+msgstr "Вернитесь на эту страницу"
+
+msgid "Go to My Profile"
+msgstr "Перейти к моему профилю"
+
+msgid "Go to Admin"
+msgstr "Перейти в админ-панель"
+
+msgid "You must be a creator to access this page. Please update your profile in Django Admin to enable creator mode."
+msgstr "Вы должны быть создателем для доступа к этой странице. Пожалуйста, обновите свой профиль в админ-панели Django, чтобы включить режим создателя."
+
+msgid "No category"
+msgstr "Без категории"

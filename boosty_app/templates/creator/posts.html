@@ -1,0 +1,70 @@
+{% extends 'creator/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Posts" %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans "My Posts" %}</h2>
+        <a href="{% url 'creator:create_post' %}" class="btn btn-primary">{% trans "Create New Post" %}</a>
+    </div>
+
+    <div style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+        <a href="?status=all" class="btn {% if status_filter == 'all' %}btn-primary{% else %}btn-secondary{% endif %} btn-small">{% trans "All" %}</a>
+        <a href="?status=published" class="btn {% if status_filter == 'published' %}btn-primary{% else %}btn-secondary{% endif %} btn-small">{% trans "Published" %}</a>
+        <a href="?status=draft" class="btn {% if status_filter == 'draft' %}btn-primary{% else %}btn-secondary{% endif %} btn-small">{% trans "Drafts" %}</a>
+        <a href="?status=archived" class="btn {% if status_filter == 'archived' %}btn-primary{% else %}btn-secondary{% endif %} btn-small">{% trans "Archived" %}</a>
+    </div>
+
+    {% if posts %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "Title" %}</th>
+                    <th>{% trans "Category" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Visibility" %}</th>
+                    <th>{% trans "Created" %}</th>
+                    <th>{% trans "Actions" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr>
+                    <td><strong>{{ post.title }}</strong></td>
+                    <td>{{ post.category.name|default:_("No category") }}</td>
+                    <td>
+                        {% if post.status == 'published' %}
+                            <span class="badge badge-success">{% trans "Published" %}</span>
+                        {% elif post.status == 'draft' %}
+                            <span class="badge badge-warning">{% trans "Draft" %}</span>
+                        {% else %}
+                            <span class="badge badge-secondary">{% trans "Archived" %}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-secondary">{% trans "Subscriber Only" %}</span>
+                    </td>
+                    <td class="text-muted">{{ post.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'creator:view_post' post.id %}" class="btn btn-primary btn-small">{% trans "View" %}</a>
+                        <a href="{% url 'creator:edit_post' post.id %}" class="btn btn-secondary btn-small">{% trans "Edit" %}</a>
+                        <form method="post" action="{% url 'creator:delete_post' post.id %}" style="display: inline-block; margin-left: 0.5rem;" onsubmit="return confirm('{% trans "Are you sure you want to delete this post?" %}');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-small">{% trans "Delete" %}</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <p>{% trans "No posts found" %}{% if status_filter != 'all' %} {% trans "with status" %} "{{ status_filter }}"{% endif %}.</p>
+            <a href="{% url 'creator:create_post' %}" class="btn btn-primary" style="margin-top: 1rem;">{% trans "Create Your First Post" %}</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

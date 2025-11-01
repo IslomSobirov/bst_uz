@@ -1,0 +1,44 @@
+{% extends 'creator/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Comments" %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans "Comments on My Posts" %}</h2>
+    </div>
+
+    {% if comments %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "Post" %}</th>
+                    <th>{% trans "Author" %}</th>
+                    <th>{% trans "Comment" %}</th>
+                    <th>{% trans "Date" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in comments %}
+                <tr style="cursor: pointer;" onclick="window.location.href='{% url 'creator:view_post' comment.post.id %}'" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor=''">
+                    <td>
+                        <strong>{{ comment.post.title }}</strong>
+                        <br>
+                        <small class="text-muted">{{ comment.post.status|capfirst }}</small>
+                    </td>
+                    <td>{{ comment.author.username }}</td>
+                    <td>{{ comment.content }}</td>
+                    <td class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <p>{% trans "No comments yet on your posts." %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'creator/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{{ post.title }}</h2>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'creator:edit_post' post.id %}" class="btn btn-secondary">{% trans "Edit" %}</a>
+            <a href="{% url 'creator:posts' %}" class="btn btn-secondary">{% trans "Back to Posts" %}</a>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+            <span class="badge {% if post.status == 'published' %}badge-success{% elif post.status == 'draft' %}badge-warning{% else %}badge-secondary{% endif %}">
+                {{ post.status|capfirst }}
+            </span>
+            {% if post.category %}
+                <span class="badge badge-secondary">{{ post.category.name }}</span>
+            {% endif %}
+            <span class="text-muted">{{ post.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+
+        {% if post.image %}
+            <div style="margin-bottom: 1.5rem;">
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 100%; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            </div>
+        {% endif %}
+
+        <div style="line-height: 1.8; font-size: 1.1rem; white-space: pre-wrap;">{{ post.content }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans "Comments" %} ({{ comments.count }})</h2>
+    </div>
+
+    {% if comments %}
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for comment in comments %}
+            <div style="padding: 1rem; background-color: #f8f9fa; border-radius: 5px; border-left: 3px solid #667eea;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                    <div>
+                        <strong>{{ comment.author.username }}</strong>
+                        <span class="text-muted" style="margin-left: 0.5rem;">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                </div>
+                <div style="line-height: 1.6;">{{ comment.content }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <p>{% trans "No comments yet on this post." %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

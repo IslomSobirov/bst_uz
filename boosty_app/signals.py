@@ -66,14 +66,37 @@ def resize_image(image_field, max_width, max_height, quality=85):
 def create_user_profile(sender, instance, created, **kwargs):
     """Create UserProfile when a User is created"""
     if created:
-        UserProfile.objects.create(user=instance)
+        profile = UserProfile.objects.create(
+            user=instance, is_staff=instance.is_staff, is_superuser=instance.is_superuser
+        )
 
 
 @receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    """Save UserProfile when a User is saved"""
+def sync_user_profile(sender, instance, **kwargs):
+    """Sync User is_staff and is_superuser to UserProfile"""
+    # Skip if this save was triggered by UserProfile sync (prevent recursion)
+    if kwargs.get('update_fields') is not None:
+        return
     if hasattr(instance, "profile"):
-        instance.profile.save()
+        profile = instance.profile
+        if profile.is_staff != instance.is_staff or profile.is_superuser != instance.is_superuser:
+            profile.is_staff = instance.is_staff
+            profile.is_superuser = instance.is_superuser
+            # Prevent recursion by skipping signals temporarily
+            UserProfile.objects.filter(pk=profile.pk).update(
+                is_staff=instance.is_staff, is_superuser=instance.is_superuser
+            )
+
+
+@receiver(post_save, sender=UserProfile)
+def sync_user_permissions(sender, instance, **kwargs):
+    """Sync UserProfile is_staff and is_superuser to User"""
+    # Skip if this save was triggered by User sync (prevent recursion)
+    if kwargs.get('update_fields') is not None:
+        return
+    if instance.user.is_staff != instance.is_staff or instance.user.is_superuser != instance.is_superuser:
+        # Use update to prevent triggering signals
+        User.objects.filter(pk=instance.user.pk).update(is_staff=instance.is_staff, is_superuser=instance.is_superuser)
 
 
 @receiver(pre_save, sender=UserProfile)

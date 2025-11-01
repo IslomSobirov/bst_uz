@@ -37,6 +37,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # Add locale middleware for i18n
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',  # Disabled for API development
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -58,6 +59,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',  # Add i18n context processor
             ],
         },
     },
@@ -94,10 +96,27 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'  # Russian as default language
+LANGUAGES = [
+    ('ru', 'Русский'),
+    ('en', 'English'),
+]
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
+
+# Locale paths
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
+# Login URL for creator dashboard
+LOGIN_URL = '/admin/login/'
+LOGIN_REDIRECT_URL = '/creator/'
+
+# Admin site configuration - requires is_staff by default
+# Users need is_staff=True to access Django admin
+# is_superuser gives full admin privileges
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'

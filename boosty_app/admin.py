@@ -5,11 +5,26 @@ from .models import Category, Comment, Post, Subscription, UserProfile
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'is_creator', 'subscriber_count', 'following_count', 'created_at']
-    list_filter = ['is_creator', 'created_at']
+    list_display = [
+        'user',
+        'is_creator',
+        'is_staff',
+        'is_superuser',
+        'subscriber_count',
+        'following_count',
+        'created_at',
+    ]
+    list_filter = ['is_creator', 'is_staff', 'is_superuser', 'created_at']
     search_fields = ['user__username', 'user__email', 'bio']
-    list_editable = ['is_creator']
+    list_editable = ['is_creator', 'is_staff', 'is_superuser']
     date_hierarchy = 'created_at'
+    fieldsets = (
+        ('User', {'fields': ('user',)}),
+        ('Permissions', {'fields': ('is_creator', 'is_staff', 'is_superuser')}),
+        ('Profile', {'fields': ('bio', 'avatar')}),
+        ('Timestamps', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),
+    )
+    readonly_fields = ['created_at', 'updated_at']
 
     @admin.display(description='Subscribers')
     def subscriber_count(self, obj):

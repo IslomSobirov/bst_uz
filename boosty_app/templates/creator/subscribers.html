@@ -1,0 +1,38 @@
+{% extends 'creator/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Subscribers" %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans "My Subscribers" %} ({{ subscriber_count }})</h2>
+    </div>
+
+    {% if subscriptions %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "Username" %}</th>
+                    <th>{% trans "Email" %}</th>
+                    <th>{% trans "Subscribed On" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subscription in subscriptions %}
+                <tr>
+                    <td><strong>{{ subscription.subscriber.username }}</strong></td>
+                    <td>{{ subscription.subscriber.email }}</td>
+                    <td class="text-muted">{{ subscription.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">👥</div>
+            <p>{% trans "You don't have any subscribers yet. Keep creating great content to attract subscribers!" %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

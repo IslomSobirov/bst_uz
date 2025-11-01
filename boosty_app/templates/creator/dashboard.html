@@ -1,0 +1,136 @@
+{% extends 'creator/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Dashboard" %}{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem; color: #333;">{% trans "Welcome back" %}, {{ profile.user.username }}!</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_posts }}</div>
+        <div class="stat-label">{% trans "Total Posts" %}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ published_posts }}</div>
+        <div class="stat-label">{% trans "Published" %}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ draft_posts }}</div>
+        <div class="stat-label">{% trans "Drafts" %}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ subscriber_count }}</div>
+        <div class="stat-label">{% trans "Subscribers" %}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans "Recent Posts" %}</h2>
+        <a href="{% url 'creator:posts' %}" class="btn btn-primary btn-small">{% trans "View All" %}</a>
+    </div>
+    {% if recent_posts %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "Title" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Created" %}</th>
+                    <th>{% trans "Actions" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in recent_posts %}
+                <tr>
+                    <td><strong>{{ post.title }}</strong></td>
+                    <td>
+                        {% if post.status == 'published' %}
+                            <span class="badge badge-success">{% trans "Published" %}</span>
+                        {% elif post.status == 'draft' %}
+                            <span class="badge badge-warning">{% trans "Draft" %}</span>
+                        {% else %}
+                            <span class="badge badge-secondary">{% trans "Archived" %}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted">{{ post.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'creator:edit_post' post.id %}" class="btn btn-secondary btn-small">{% trans "Edit" %}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <p>{% trans "No posts yet. Create your first post!" %}</p>
+            <a href="{% url 'creator:create_post' %}" class="btn btn-primary" style="margin-top: 1rem;">{% trans "Create Post" %}</a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans "Recent Comments" %}</h2>
+        <a href="{% url 'creator:comments' %}" class="btn btn-primary btn-small">{% trans "View All" %}</a>
+    </div>
+    {% if recent_comments %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "Post" %}</th>
+                    <th>{% trans "Author" %}</th>
+                    <th>{% trans "Comment" %}</th>
+                    <th>{% trans "Date" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in recent_comments %}
+                <tr>
+                    <td><strong>{{ comment.post.title }}</strong></td>
+                    <td>{{ comment.author.username }}</td>
+                    <td>{{ comment.content|truncatewords:15 }}</td>
+                    <td class="text-muted">{{ comment.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <p>{% trans "No comments yet." %}</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans "Recent Subscribers" %}</h2>
+        <a href="{% url 'creator:subscribers' %}" class="btn btn-primary btn-small">{% trans "View All" %}</a>
+    </div>
+    {% if recent_subscriptions %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "Username" %}</th>
+                    <th>{% trans "Subscribed On" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subscription in recent_subscriptions %}
+                <tr>
+                    <td><strong>{{ subscription.subscriber.username }}</strong></td>
+                    <td class="text-muted">{{ subscription.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">👥</div>
+            <p>{% trans "No subscribers yet. Keep creating great content!" %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

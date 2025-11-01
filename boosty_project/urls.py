@@ -10,6 +10,7 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('boosty_app.urls')),
+    path('creator/', include('boosty_app.creator_urls')),
 ]
 
 # Serve static and media files during development
