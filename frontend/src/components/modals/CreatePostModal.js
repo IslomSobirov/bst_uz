@@ -8,9 +8,12 @@ function CreatePostModal({ onClose, onPostCreated }) {
     title: '',
     content: '',
     category: '',
-    status: 'draft'
+    status: 'draft',
+    is_free: true,
+    tiers: []
   });
   const [categories, setCategories] = useState(null);
+  const [tiers, setTiers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,6 +24,7 @@ function CreatePostModal({ onClose, onPostCreated }) {
   useEffect(() => {
     console.log('CreatePostModal useEffect triggered');
     fetchCategories();
+    fetchTiers();
   }, []);
 
   const fetchCategories = async () => {
@@ -50,13 +54,49 @@ function CreatePostModal({ onClose, onPostCreated }) {
     }
   };
 
+  const fetchTiers = async () => {
+    console.log('Fetching tiers...');
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return;
+      }
+
+      const response = await axios.get(getApiUrl('/api/tiers/my_tiers/'), {
+        headers: { Authorization: `Token ${token}` }
+      });
+      console.log('Tiers response:', response.data);
+      setTiers(response.data);
+    } catch (err) {
+      console.error('Error fetching tiers:', err);
+    }
+  };
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     console.log('Input change:', name, value);
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+
+    if (type === 'checkbox' && name === 'is_free') {
+      setFormData(prev => ({
+        ...prev,
+        is_free: checked,
+        tiers: checked ? [] : prev.tiers // Clear tiers if marking as free
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const handleTierToggle = (tierId) => {
+    setFormData(prev => {
+      const tiers = prev.tiers.includes(tierId)
+        ? prev.tiers.filter(id => id !== tierId)
+        : [...prev.tiers, tierId];
+      return { ...prev, tiers };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -163,6 +203,36 @@ function CreatePostModal({ onClose, onPostCreated }) {
                 <option value="published">Published</option>
               </select>
             </div>
+
+            <div className="form-group checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  name="is_free"
+                  checked={formData.is_free}
+                  onChange={handleInputChange}
+                />
+                <span>Free Post (visible to everyone)</span>
+              </label>
+            </div>
+
+            {!formData.is_free && tiers.length > 0 && (
+              <div className="form-group">
+                <label>Select Tiers (leave empty for all tiers)</label>
+                <div className="tiers-checkboxes">
+                  {tiers.map(tier => (
+                    <label key={tier.id} className="tier-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={formData.tiers.includes(tier.id)}
+                        onChange={() => handleTierToggle(tier.id)}
+                      />
+                      <span>{tier.name} (${tier.price}/month)</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="form-actions">
               <button type="button" className="btn btn-secondary" onClick={onClose}>

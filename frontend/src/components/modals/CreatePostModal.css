@@ -197,6 +197,65 @@
   cursor: not-allowed;
 }
 
+/* Checkbox Groups */
+.checkbox-group {
+  background: white !important;
+  border: none !important;
+  padding: 15px 0 !important;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 400 !important;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.tiers-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  background: #f7fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.tier-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tier-checkbox:hover {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.tier-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.tier-checkbox span {
+  color: #2d3748;
+  font-size: 0.95rem;
+}
+
 @media (max-width: 768px) {
   .create-post-modal-overlay {
     padding: 15px;

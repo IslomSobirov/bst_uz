@@ -7,7 +7,8 @@ All models are imported here for backward compatibility
 from .category import Category
 from .comment import Comment
 from .post import Post
-from .subscription import Subscription
+from .subscription import Subscription, TierSubscription
+from .tier import SubscriptionTier
 from .user import UserProfile
 
 __all__ = [
@@ -16,4 +17,6 @@ __all__ = [
     'Post',
     'Comment',
     'Subscription',
+    'SubscriptionTier',
+    'TierSubscription',
 ]

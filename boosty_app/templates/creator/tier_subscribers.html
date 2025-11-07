@@ -1,0 +1,64 @@
+{% extends 'creator/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Tier Subscribers" %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% trans "Subscribers for" %} "{{ tier.name }}"</h1>
+    <a href="{% url 'creator:tiers' %}" class="btn btn-secondary">{% trans "Back to Tiers" %}</a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{{ subscriber_count }} {% trans "Active Subscribers" %}</h2>
+        <div style="font-size: 1.2rem; color: #667eea;">
+            <strong>${{ tier.price }}</strong>/{% trans "month" %}
+        </div>
+    </div>
+
+    {% if subscriptions %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{% trans "Username" %}</th>
+                <th>{% trans "Subscribed On" %}</th>
+                <th>{% trans "Expires On" %}</th>
+                <th>{% trans "Days Remaining" %}</th>
+                <th>{% trans "Status" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscription in subscriptions %}
+            <tr>
+                <td><strong>{{ subscription.subscriber.username }}</strong></td>
+                <td class="text-muted">{{ subscription.start_date|date:"M d, Y" }}</td>
+                <td class="text-muted">{{ subscription.end_date|date:"M d, Y" }}</td>
+                <td>
+                    {% if subscription.days_remaining > 7 %}
+                    <span style="color: #43e97b;">{{ subscription.days_remaining }} {% trans "days" %}</span>
+                    {% elif subscription.days_remaining > 0 %}
+                    <span style="color: #f5576c;">{{ subscription.days_remaining }} {% trans "days" %}</span>
+                    {% else %}
+                    <span style="color: #999;">{% trans "Expired" %}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if subscription.cancelled_at %}
+                    <span class="badge badge-warning">{% trans "Cancelled" %}</span>
+                    {% else %}
+                    <span class="badge badge-success">{% trans "Active" %}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">👥</div>
+        <p>{% trans "No subscribers to this tier yet." %}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

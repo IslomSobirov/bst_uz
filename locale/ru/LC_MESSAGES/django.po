@@ -241,3 +241,133 @@ msgstr "Вы должны быть создателем для доступа к
 
 msgid "No category"
 msgstr "Без категории"
+
+# Tier Management Translations
+msgid "Tiers"
+msgstr "Тарифы"
+
+msgid "Subscription Tiers"
+msgstr "Тарифы подписки"
+
+msgid "Manage Subscription Tiers"
+msgstr "Управление тарифами подписки"
+
+msgid "Subscription tier created successfully!"
+msgstr "Тариф подписки успешно создан!"
+
+msgid "Subscription tier updated successfully!"
+msgstr "Тариф подписки успешно обновлен!"
+
+msgid "Subscription tier deleted successfully!"
+msgstr "Тариф подписки успешно удален!"
+
+msgid "You can only create up to 10 subscription tiers."
+msgstr "Вы можете создать максимум 10 тарифов подписки."
+
+msgid "Create New Tier"
+msgstr "Создать новый тариф"
+
+msgid "Create First Tier"
+msgstr "Создать первый тариф"
+
+msgid "Edit Tier"
+msgstr "Редактировать тариф"
+
+msgid "Create Subscription Tier"
+msgstr "Создать тариф подписки"
+
+msgid "Edit Subscription Tier"
+msgstr "Редактировать тариф подписки"
+
+msgid "Create New Subscription Tier"
+msgstr "Создать новый тариф подписки"
+
+msgid "Back to Tiers"
+msgstr "Назад к тарифам"
+
+msgid "Update Tier"
+msgstr "Обновить тариф"
+
+msgid "Create Tier"
+msgstr "Создать тариф"
+
+msgid "Maximum 10 tiers reached"
+msgstr "Достигнуто максимальное количество тарифов (10)"
+
+msgid "Total Tiers:"
+msgstr "Всего тарифов:"
+
+msgid "You haven't created any subscription tiers yet."
+msgstr "Вы еще не создали ни одного тарифа подписки."
+
+msgid "Create your first tier to start monetizing your content!"
+msgstr "Создайте свой первый тариф, чтобы начать монетизировать свой контент!"
+
+msgid "Are you sure you want to delete this tier?"
+msgstr "Вы уверены, что хотите удалить этот тариф?"
+
+msgid "per month"
+msgstr "в месяц"
+
+msgid "Order"
+msgstr "Порядок"
+
+msgid "Inactive"
+msgstr "Неактивен"
+
+msgid "Active Tiers"
+msgstr "Активные тарифы"
+
+msgid "Tier Subscribers"
+msgstr "Подписчики тарифа"
+
+msgid "Monthly Revenue"
+msgstr "Ежемесячный доход"
+
+msgid "Manage Posts"
+msgstr "Управление постами"
+
+msgid "Subscribers for"
+msgstr "Подписчики для"
+
+msgid "Active Subscribers"
+msgstr "Активные подписчики"
+
+msgid "month"
+msgstr "месяц"
+
+msgid "Subscribed On"
+msgstr "Подписан с"
+
+msgid "Expires On"
+msgstr "Истекает"
+
+msgid "Days Remaining"
+msgstr "Осталось дней"
+
+msgid "days"
+msgstr "дней"
+
+msgid "Expired"
+msgstr "Истек"
+
+msgid "Cancelled"
+msgstr "Отменен"
+
+msgid "Active"
+msgstr "Активен"
+
+msgid "No subscribers to this tier yet."
+msgstr "У этого тарифа пока нет подписчиков."
+
+msgid "Please correct the errors below:"
+msgstr "Пожалуйста, исправьте следующие ошибки:"
+
+msgid "Current image"
+msgstr "Текущее изображение"
+
+msgid "Lower numbers appear first"
+msgstr "Меньшие числа отображаются первыми"
+
+msgid "Monthly price in USD"
+msgstr "Ежемесячная цена в долларах США"

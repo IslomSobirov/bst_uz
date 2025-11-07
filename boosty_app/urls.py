@@ -7,6 +7,8 @@ from . import views
 router = DefaultRouter()
 router.register(r'profiles', views.UserProfileViewSet)
 router.register(r'subscriptions', views.SubscriptionViewSet)
+router.register(r'tiers', views.SubscriptionTierViewSet, basename='tier')
+router.register(r'tier-subscriptions', views.TierSubscriptionViewSet, basename='tier-subscription')
 router.register(r'categories', views.CategoryViewSet)
 router.register(r'posts', views.PostViewSet, basename='post')
 router.register(r'comments', views.CommentViewSet)

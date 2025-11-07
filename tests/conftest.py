@@ -45,6 +45,35 @@ def creator(db):
 
 
 @pytest.fixture
+def creator_user(db):
+    """Alias for creator fixture"""
+    user = User.objects.create_user(
+        username='creator_test',
+        email='creator_test@example.com',
+        password='testpass123',
+        first_name='Creator',
+        last_name='Test'
+    )
+    user.profile.is_creator = True
+    user.profile.bio = 'This is a test creator bio that is long enough'
+    user.profile.save()
+    return user
+
+
+@pytest.fixture
+def regular_user(db):
+    """Alias for user fixture"""
+    user = User.objects.create_user(
+        username='regular_test',
+        email='regular_test@example.com',
+        password='testpass123',
+        first_name='Regular',
+        last_name='Test'
+    )
+    return user
+
+
+@pytest.fixture
 def authenticated_client(api_client, user):
     """API client authenticated as regular user"""
     token = Token.objects.create(user=user)
@@ -161,8 +190,22 @@ def free_post(db, creator, category):
 
 @pytest.fixture
 def paid_post(db, creator, category):
-    """Create a paid (non-free) published post"""
-    return Post.objects.create(
+    """Create a paid (non-free) published post with a tier"""
+    from decimal import Decimal
+
+    from boosty_app.models import SubscriptionTier
+
+    # Create a tier for the creator
+    tier = SubscriptionTier.objects.create(
+        creator=creator.profile,
+        name='Premium',
+        description='Premium tier for testing',
+        price=Decimal('10.00'),
+        is_active=True
+    )
+
+    # Create the post and assign the tier
+    post = Post.objects.create(
         title='Paid Post',
         content='This is a paid post only visible to subscribers',
         author=creator,
@@ -170,3 +213,5 @@ def paid_post(db, creator, category):
         status='published',
         is_free=False
     )
+    post.tiers.add(tier)
+    return post

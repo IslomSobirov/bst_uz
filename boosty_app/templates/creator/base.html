@@ -394,6 +394,11 @@
                         >{% trans "Posts" %}</a
                     >
                     <a
+                        href="{% url 'creator:tiers' %}"
+                        class="{% if 'tier' in request.resolver_match.url_name %}active{% endif %}"
+                        >💎 {% trans "Tiers" %}</a
+                    >
+                    <a
                         href="{% url 'creator:comments' %}"
                         class="{% if request.resolver_match.url_name == 'comments' %}active{% endif %}"
                         >{% trans "Comments" %}</a

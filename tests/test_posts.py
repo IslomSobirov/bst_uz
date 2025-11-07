@@ -174,11 +174,12 @@ class TestPostDetail:
         assert response.data['is_free'] is False
 
     def test_update_other_post(self, authenticated_client, published_post):
-        """Test updating someone else's post (should fail)"""
+        """Test updating someone else's post (should fail with 404 - security pattern)"""
         data = {'title': 'Unauthorized Update'}
         response = authenticated_client.patch(f'/api/posts/{published_post.id}/', data, format='json')
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        # Returns 404 instead of 403 to not reveal existence of resource
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_delete_own_post(self, creator_client, draft_post):
         """Test deleting own post"""
@@ -189,10 +190,11 @@ class TestPostDetail:
         assert not Post.objects.filter(id=post_id).exists()
 
     def test_delete_other_post(self, authenticated_client, published_post):
-        """Test deleting someone else's post (should fail)"""
+        """Test deleting someone else's post (should fail with 404 - security pattern)"""
         response = authenticated_client.delete(f'/api/posts/{published_post.id}/')
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        # Returns 404 instead of 403 to not reveal existence of resource
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.django_db
@@ -303,13 +305,19 @@ class TestPostIsFree:
     """Test is_free field functionality"""
 
     def test_free_post_visible_to_unauthenticated(self, api_client, free_post, paid_post):
-        """Test that free posts are visible to unauthenticated users"""
+        """Test that free posts are visible and paid posts are visible but locked to unauthenticated users"""
         response = api_client.get('/api/posts/')
 
         assert response.status_code == status.HTTP_200_OK
         post_ids = [post['id'] for post in response.data['results']]
         assert free_post.id in post_ids
-        assert paid_post.id not in post_ids
+        # Paid posts are now visible in list (but locked)
+        assert paid_post.id in post_ids
+
+        # Check that paid post is marked as locked
+        paid_post_data = next((p for p in response.data['results'] if p['id'] == paid_post.id), None)
+        assert paid_post_data is not None
+        assert paid_post_data['is_locked'] is True
 
     def test_free_post_detail_visible_to_unauthenticated(self, api_client, free_post):
         """Test that free post detail is accessible to unauthenticated users"""
@@ -319,19 +327,31 @@ class TestPostIsFree:
         assert response.data['title'] == free_post.title
         assert response.data['is_free'] is True
 
-    def test_paid_post_not_visible_to_unauthenticated(self, api_client, paid_post):
-        """Test that paid posts are not visible to unauthenticated users"""
+    def test_paid_post_visible_but_locked_to_unauthenticated(self, api_client, paid_post):
+        """Test that paid posts are visible but locked to unauthenticated users"""
         response = api_client.get('/api/posts/')
 
         assert response.status_code == status.HTTP_200_OK
         post_ids = [post['id'] for post in response.data['results']]
-        assert paid_post.id not in post_ids
+        # Paid posts are visible in list (tier system shows locked posts)
+        assert paid_post.id in post_ids
 
-    def test_paid_post_detail_not_accessible_to_unauthenticated(self, api_client, paid_post):
-        """Test that paid post detail is not accessible to unauthenticated users"""
+        # Check that it's marked as locked
+        paid_post_data = next((p for p in response.data['results'] if p['id'] == paid_post.id), None)
+        assert paid_post_data is not None
+        assert paid_post_data['is_locked'] is True
+        assert paid_post_data['user_has_access'] is False
+
+    def test_paid_post_detail_accessible_but_locked_to_unauthenticated(self, api_client, paid_post):
+        """Test that paid post detail is accessible but content is locked to unauthenticated users"""
         response = api_client.get(f'/api/posts/{paid_post.id}/')
 
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['id'] == paid_post.id
+        assert response.data['is_locked'] is True
+        assert response.data['user_has_access'] is False
+        # Content should be preview/locked message
+        assert '[Subscribe to read more]' in response.data['content'] or '[This content is locked' in response.data['content']
 
     def test_paid_post_visible_to_subscriber(self, authenticated_client, user, creator, paid_post, subscription):
         """Test that paid posts are visible to subscribers"""
@@ -349,13 +369,20 @@ class TestPostIsFree:
         assert response.data['title'] == paid_post.title
         assert response.data['is_free'] is False
 
-    def test_paid_post_not_visible_to_non_subscriber(self, authenticated_client, user, paid_post):
-        """Test that paid posts are not visible to non-subscribers"""
+    def test_paid_post_visible_but_locked_to_non_subscriber(self, authenticated_client, user, paid_post):
+        """Test that paid posts are visible but locked to authenticated non-subscribers"""
         response = authenticated_client.get('/api/posts/')
 
         assert response.status_code == status.HTTP_200_OK
         post_ids = [post['id'] for post in response.data['results']]
-        assert paid_post.id not in post_ids
+        # Paid posts are visible in list (tier system shows locked posts)
+        assert paid_post.id in post_ids
+
+        # Check that it's marked as locked for non-subscriber
+        paid_post_data = next((p for p in response.data['results'] if p['id'] == paid_post.id), None)
+        assert paid_post_data is not None
+        assert paid_post_data['is_locked'] is True
+        assert paid_post_data['user_has_access'] is False
 
     def test_free_post_visible_to_non_subscriber(self, authenticated_client, user, free_post):
         """Test that free posts are visible to authenticated non-subscribers"""

@@ -1,0 +1,100 @@
+{% extends 'creator/base.html' %}
+{% load i18n %}
+
+{% block title %}{% if tier %}{% trans "Edit Tier" %}{% else %}{% trans "Create Tier" %}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if tier %}{% trans "Edit Subscription Tier" %}{% else %}{% trans "Create New Subscription Tier" %}{% endif %}</h1>
+    <a href="{% url 'creator:tiers' %}" class="btn btn-secondary">{% trans "Back to Tiers" %}</a>
+</div>
+
+<div class="card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>{% trans "Please correct the errors below:" %}</strong>
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">{{ form.name.label }} *</label>
+            {{ form.name }}
+            {% if form.name.help_text %}
+            <small class="form-text text-muted">{{ form.name.help_text }}</small>
+            {% endif %}
+            {% if form.name.errors %}
+            <div class="error">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.price.id_for_label }}">{{ form.price.label }} *</label>
+            {{ form.price }}
+            {% if form.price.help_text %}
+            <small class="form-text text-muted">{{ form.price.help_text }}</small>
+            {% endif %}
+            {% if form.price.errors %}
+            <div class="error">{{ form.price.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">{{ form.description.label }} *</label>
+            {{ form.description }}
+            {% if form.description.help_text %}
+            <small class="form-text text-muted">{{ form.description.help_text }}</small>
+            {% endif %}
+            {% if form.description.errors %}
+            <div class="error">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+            {{ form.image }}
+            {% if tier.image %}
+            <div style="margin-top: 0.5rem;">
+                <img src="{{ tier.image.url }}" alt="Current image" style="max-width: 200px; border-radius: 8px;">
+                <p style="font-size: 0.85rem; color: #666;">{% trans "Current image" %}</p>
+            </div>
+            {% endif %}
+            {% if form.image.help_text %}
+            <small class="form-text text-muted">{{ form.image.help_text }}</small>
+            {% endif %}
+            {% if form.image.errors %}
+            <div class="error">{{ form.image.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.order.id_for_label }}">{{ form.order.label }}</label>
+            {{ form.order }}
+            {% if form.order.help_text %}
+            <small class="form-text text-muted">{{ form.order.help_text }}</small>
+            {% endif %}
+            {% if form.order.errors %}
+            <div class="error">{{ form.order.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
+            {{ form.is_active }}
+            <label for="{{ form.is_active.id_for_label }}" style="margin-bottom: 0;">{{ form.is_active.label }}</label>
+            {% if form.is_active.errors %}
+            <div class="error">{{ form.is_active.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if tier %}{% trans "Update Tier" %}{% else %}{% trans "Create Tier" %}{% endif %}
+            </button>
+            <a href="{% url 'creator:tiers' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

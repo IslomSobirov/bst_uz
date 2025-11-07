@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Category, Comment, Post, Subscription, UserProfile
+from .models import Category, Comment, Post, Subscription, SubscriptionTier, TierSubscription, UserProfile
 from .serializers import (
     CategorySerializer,
     CommentSerializer,
@@ -15,6 +15,9 @@ from .serializers import (
     PostSerializer,
     PostUpdateSerializer,
     SubscriptionSerializer,
+    SubscriptionTierCreateSerializer,
+    SubscriptionTierSerializer,
+    TierSubscriptionSerializer,
     UserLoginSerializer,
     UserProfileSerializer,
     UserRegistrationSerializer,
@@ -140,6 +143,24 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(following, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
+    def tiers(self, request, pk=None):
+        """Get a creator's subscription tiers"""
+        creator = self.get_object()
+        if not creator.is_creator:
+            return Response({'error': 'This user is not a creator'}, status=status.HTTP_400_BAD_REQUEST)
+        tiers = SubscriptionTier.objects.filter(creator=creator, is_active=True).order_by('order', 'price')
+        serializer = SubscriptionTierSerializer(tiers, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
+    def posts(self, request, pk=None):
+        """Get a creator's posts (free + locked paid posts for non-subscribers)"""
+        creator = self.get_object()
+        posts = Post.objects.filter(author=creator.user, status='published').order_by('-created_at')
+        serializer = PostSerializer(posts, many=True, context={'request': request})
+        return Response(serializer.data)
+
 
 class SubscriptionViewSet(viewsets.ModelViewSet):
     """ViewSet for managing subscriptions"""
@@ -187,38 +208,23 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        """Filter posts - show free posts to everyone, paid posts only to subscribers"""
+        """Filter posts - show free posts and locked/unlocked paid posts"""
+        from django.utils import timezone
+
         if self.action == 'list':
-            # Show published posts
-            # - Free posts: visible to everyone
-            # - Paid posts: only visible to subscribers
+            # Show all published posts, but locked status will be determined in serializer
+            return Post.objects.filter(status='published').distinct()
+        elif self.action == 'retrieve':
+            # For retrieve, show published posts or own posts
             if self.request.user.is_authenticated:
-                # Get creators the user is subscribed to
-                subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
-                subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
-
-                # Show free published posts OR paid posts from subscribed creators
-                return Post.objects.filter(
-                    Q(status='published', is_free=True)
-                    | Q(status='published', is_free=False, author_id__in=subscribed_author_ids)
-                ).distinct()
+                return Post.objects.filter(Q(status='published') | Q(author=self.request.user)).distinct()
             else:
-                # Unauthenticated users can only see free published posts
-                return Post.objects.filter(status='published', is_free=True)
-        elif self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
-            # Allow access to own posts (any status) or published posts user can access
+                return Post.objects.filter(status='published')
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            # Only show own posts for modification
             if self.request.user.is_authenticated:
-                subscribed_creators = UserProfile.objects.filter(subscribers__subscriber=self.request.user)
-                subscribed_author_ids = [creator.user.id for creator in subscribed_creators]
-
-                return Post.objects.filter(
-                    Q(author=self.request.user)
-                    | Q(status='published', is_free=True)
-                    | Q(status='published', is_free=False, author_id__in=subscribed_author_ids)
-                ).distinct()
-            else:
-                # Unauthenticated users can only access free published posts
-                return Post.objects.filter(status='published', is_free=True)
+                return Post.objects.filter(author=self.request.user)
+            return Post.objects.none()
         return Post.objects.all()
 
     def get_object(self):
@@ -397,3 +403,139 @@ class CommentViewSet(viewsets.ModelViewSet):
 
             raise PermissionDenied("You can only modify your own comments")
         return super().destroy(request, *args, **kwargs)
+
+
+class SubscriptionTierViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing subscription tiers"""
+
+    queryset = SubscriptionTier.objects.filter(is_active=True)
+    serializer_class = SubscriptionTierSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        """Filter tiers based on action"""
+        if self.action == 'list':
+            # For list, filter by creator if provided
+            creator_id = self.request.query_params.get('creator_id', None)
+            if creator_id:
+                return SubscriptionTier.objects.filter(creator_id=creator_id, is_active=True).order_by('order', 'price')
+            return SubscriptionTier.objects.filter(is_active=True).order_by('order', 'price')
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            # For modifications, only show user's own tiers
+            if self.request.user.is_authenticated and hasattr(self.request.user, 'profile'):
+                return SubscriptionTier.objects.filter(creator=self.request.user.profile)
+            return SubscriptionTier.objects.none()
+        return SubscriptionTier.objects.filter(is_active=True)
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return SubscriptionTierCreateSerializer
+        return SubscriptionTierSerializer
+
+    def perform_create(self, serializer):
+        """Create tier for current user's profile"""
+        if not self.request.user.profile.is_creator:
+            from rest_framework.exceptions import PermissionDenied
+
+            raise PermissionDenied("Only creators can create subscription tiers")
+        serializer.save(creator=self.request.user.profile)
+
+    def get_object(self):
+        """Override to check permissions"""
+        obj = super().get_object()
+        if self.action in ['update', 'partial_update', 'destroy']:
+            if not self.request.user.is_authenticated:
+                from rest_framework.exceptions import PermissionDenied
+
+                raise PermissionDenied("Authentication required")
+            if obj.creator != self.request.user.profile:
+                from rest_framework.exceptions import PermissionDenied
+
+                raise PermissionDenied("You can only modify your own tiers")
+        return obj
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def my_tiers(self, request):
+        """Get current user's tiers"""
+        if not request.user.profile.is_creator:
+            return Response({'error': 'Only creators can have tiers'}, status=status.HTTP_403_FORBIDDEN)
+        tiers = SubscriptionTier.objects.filter(creator=request.user.profile).order_by('order', 'price')
+        serializer = self.get_serializer(tiers, many=True)
+        return Response(serializer.data)
+
+
+class TierSubscriptionViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing tier subscriptions (user subscriptions to tiers)"""
+
+    queryset = TierSubscription.objects.all()
+    serializer_class = TierSubscriptionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """Only show user's own subscriptions"""
+        return TierSubscription.objects.filter(subscriber=self.request.user)
+
+    def perform_create(self, serializer):
+        """Create a new tier subscription (placeholder payment)"""
+        tier = get_object_or_404(SubscriptionTier, id=serializer.validated_data['tier_id'])
+
+        # Check if tier is active
+        if not tier.is_active:
+            from rest_framework.exceptions import ValidationError
+
+            raise ValidationError({'tier_id': 'This tier is not available for subscription'})
+
+        # Check if already subscribed to this tier
+        existing = TierSubscription.objects.filter(subscriber=self.request.user, tier=tier, is_active=True).first()
+        if existing:
+            from rest_framework.exceptions import ValidationError
+
+            raise ValidationError({'tier_id': 'You are already subscribed to this tier'})
+
+        # Create subscription (with placeholder payment)
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        serializer.save(
+            subscriber=self.request.user,
+            tier=tier,
+            is_active=True,
+            payment_status='completed',  # Placeholder - assume payment successful
+            transaction_id=f'PLACEHOLDER_{self.request.user.id}_{tier.id}_{timezone.now().timestamp()}',
+        )
+
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+        """Cancel a tier subscription"""
+        subscription = self.get_object()
+        if subscription.cancelled_at:
+            return Response({'error': 'Subscription already cancelled'}, status=status.HTTP_400_BAD_REQUEST)
+
+        subscription.cancel()
+        return Response(
+            {
+                'status': 'Subscription cancelled',
+                'message': f'Your subscription will remain active until {subscription.end_date.strftime("%Y-%m-%d")}',
+            }
+        )
+
+    @action(detail=False, methods=['get'])
+    def my_subscriptions(self, request):
+        """Get current user's active tier subscriptions"""
+        subscriptions = TierSubscription.objects.filter(subscriber=request.user, is_active=True)
+        serializer = self.get_serializer(subscriptions, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def by_creator(self, request):
+        """Get user's subscriptions grouped by creator"""
+        creator_id = request.query_params.get('creator_id')
+        if not creator_id:
+            return Response({'error': 'creator_id parameter required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        subscriptions = TierSubscription.objects.filter(
+            subscriber=request.user, tier__creator_id=creator_id, is_active=True
+        )
+        serializer = self.get_serializer(subscriptions, many=True)
+        return Response(serializer.data)

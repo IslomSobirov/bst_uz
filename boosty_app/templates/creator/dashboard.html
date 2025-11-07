@@ -25,6 +25,30 @@
     </div>
 </div>
 
+<div class="stats-grid" style="margin-top: 2rem;">
+    <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="stat-value">{{ total_tiers }}</div>
+        <div class="stat-label">{% trans "Subscription Tiers" %}</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+        <div class="stat-value">{{ active_tiers }}</div>
+        <div class="stat-label">{% trans "Active Tiers" %}</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+        <div class="stat-value">{{ total_tier_subscribers }}</div>
+        <div class="stat-label">{% trans "Tier Subscribers" %}</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+        <div class="stat-value">${{ monthly_revenue|floatformat:2 }}</div>
+        <div class="stat-label">{% trans "Monthly Revenue" %}</div>
+    </div>
+</div>
+
+<div style="margin: 2rem 0; text-align: center;">
+    <a href="{% url 'creator:tiers' %}" class="btn btn-primary" style="margin-right: 1rem;">{% trans "Manage Subscription Tiers" %}</a>
+    <a href="{% url 'creator:posts' %}" class="btn btn-secondary">{% trans "Manage Posts" %}</a>
+</div>
+
 <div class="card">
     <div class="card-header">
         <h2 class="card-title">{% trans "Recent Posts" %}</h2>
