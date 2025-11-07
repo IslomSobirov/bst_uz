@@ -24,7 +24,7 @@ services:
       - /app/*/__pycache__
       - /app/*/*/__pycache__
     ports:
-      - "8000:8000"
+      - "8001:8000"
     env_file:
       - config.env
     environment:
@@ -48,8 +48,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # Use localhost:8000 so browser makes direct requests (bypasses proxy Host header issue)
-      - REACT_APP_API_URL=http://localhost:8000
+      # Use localhost:8001 so browser makes direct requests (bypasses proxy Host header issue)
+      - REACT_APP_API_URL=http://localhost:8001
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
       - FAST_REFRESH=true

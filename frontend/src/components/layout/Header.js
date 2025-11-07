@@ -22,6 +22,12 @@ function Header({ user, onLogin, onLogout, currentView, onViewChange }) {
             >
               Posts
             </button>
+            <button
+              className={`nav-item ${currentView === 'pricing' ? 'active' : ''}`}
+              onClick={() => onViewChange('pricing')}
+            >
+              Pricing
+            </button>
             {user && (
               <button
                 className={`nav-item ${currentView === 'feed' ? 'active' : ''}`}

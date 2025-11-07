@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { getApiUrl } from '../../config/api';
 import './CreatorProfile.css';
 
 function CreatorProfile({ creator, onBack, user, onSubscribe, onCreatePost }) {
@@ -14,7 +15,7 @@ function CreatorProfile({ creator, onBack, user, onSubscribe, onCreatePost }) {
 
     try {
       // Get posts by this specific creator
-      const response = await axios.get(`http://localhost:8000/api/posts/`);
+      const response = await axios.get(getApiUrl('/api/posts/'));
       const creatorPosts = response.data.results?.filter(post =>
         post.author.id === creator.id
       ) || [];
@@ -54,11 +55,11 @@ function CreatorProfile({ creator, onBack, user, onSubscribe, onCreatePost }) {
     try {
       if (isSubscribed) {
         // Unsubscribe
-        await axios.delete(`http://localhost:8000/api/profiles/${creator.id}/unsubscribe/`);
+        await axios.delete(getApiUrl(`/api/profiles/${creator.id}/unsubscribe/`));
         setIsSubscribed(false);
       } else {
         // Subscribe
-        await axios.post(`http://localhost:8000/api/profiles/${creator.id}/subscribe/`);
+        await axios.post(getApiUrl(`/api/profiles/${creator.id}/subscribe/`));
         setIsSubscribed(true);
       }
       onSubscribe(); // Refresh creator data

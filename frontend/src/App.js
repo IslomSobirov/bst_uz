@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+import { getApiUrl } from './config/api';
 
 // Components
 import Header from './components/layout/Header';
@@ -12,9 +13,10 @@ import FreePosts from './components/posts/FreePosts';
 import PostDetail from './components/posts/PostDetail';
 import AuthModal from './components/modals/AuthModal';
 import CreatePostModal from './components/modals/CreatePostModal';
+import PricingPage from './components/pricing/PricingPage';
 
 function App() {
-  const [currentView, setCurrentView] = useState('creators'); // creators, profile, feed, posts, postDetail
+  const [currentView, setCurrentView] = useState('creators'); // creators, profile, feed, posts, postDetail, pricing
   const [selectedCreator, setSelectedCreator] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -32,7 +34,7 @@ function App() {
 
   const fetchUserProfile = async (token) => {
     try {
-      const response = await axios.get('http://localhost:8000/api/profiles/me/', {
+      const response = await axios.get(getApiUrl('/api/profiles/me/'), {
         headers: { Authorization: `Token ${token}` }
       });
       setUser(response.data);
@@ -45,7 +47,7 @@ function App() {
 
   const handleLogin = async (credentials) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/auth/login/', credentials);
+      const response = await axios.post(getApiUrl('/api/auth/login/'), credentials);
       const { token, user: userData } = response.data;
 
       localStorage.setItem('token', token);
@@ -64,7 +66,7 @@ function App() {
 
   const handleRegister = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/auth/register/', userData);
+      const response = await axios.post(getApiUrl('/api/auth/register/'), userData);
       const { token, user: newUser } = response.data;
 
       localStorage.setItem('token', token);
@@ -177,6 +179,12 @@ function App() {
             post={selectedPost}
             onBack={handleBackToPosts}
             user={user}
+          />
+        );
+      case 'pricing':
+        return (
+          <PricingPage
+            onBack={handleBackToCreators}
           />
         );
       default:

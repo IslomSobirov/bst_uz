@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getApiUrl } from '../../config/api';
 import './CreatePostModal.css';
 
 function CreatePostModal({ onClose, onPostCreated }) {
@@ -36,7 +37,7 @@ function CreatePostModal({ onClose, onPostCreated }) {
         return;
       }
 
-      const response = await axios.get('http://localhost:8000/api/categories/', {
+      const response = await axios.get(getApiUrl('/api/categories/'), {
         headers: { Authorization: `Token ${token}` }
       });
       console.log('Categories response:', response.data);
@@ -71,7 +72,7 @@ function CreatePostModal({ onClose, onPostCreated }) {
         return;
       }
 
-      await axios.post('http://localhost:8000/api/posts/', formData, {
+      await axios.post(getApiUrl('/api/posts/'), formData, {
         headers: { Authorization: `Token ${token}` }
       });
       onPostCreated();

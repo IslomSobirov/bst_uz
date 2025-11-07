@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getApiUrl } from '../../config/api';
 import './PostFeed.css';
 
 function PostFeed({ onBack, user }) {
@@ -22,7 +23,7 @@ function PostFeed({ onBack, user }) {
         return;
       }
 
-      const response = await axios.get('http://localhost:8000/api/posts/feed/', {
+      const response = await axios.get(getApiUrl('/api/posts/feed/'), {
         headers: { Authorization: `Token ${token}` }
       });
       setPosts(response.data);
