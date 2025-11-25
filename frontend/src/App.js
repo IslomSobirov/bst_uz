@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './App.css';
 import { getApiUrl } from './config/api';
 
 // Components
@@ -193,7 +192,7 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className="min-h-screen bg-background font-sans text-foreground flex flex-col">
       <Header
         user={user}
         onLogin={() => setShowAuthModal(true)}
@@ -213,7 +212,7 @@ function App() {
         selectedCategory={selectedCategory}
       />
 
-      <main className="main-content">
+      <main className="flex-grow container mx-auto px-4 py-8">
         {renderCurrentView()}
       </main>
 

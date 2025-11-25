@@ -1,66 +1,80 @@
 import React from 'react';
-import './Header.css';
+import { User, LogOut, Star } from 'lucide-react';
 
 function Header({ user, onLogin, onLogout, currentView, onViewChange }) {
+  const navItems = [
+    { id: 'creators', label: 'Creators' },
+    { id: 'posts', label: 'Posts' },
+    { id: 'pricing', label: 'Pricing' },
+  ];
+
+  if (user) {
+    navItems.push({ id: 'feed', label: 'My Feed' });
+  }
+
   return (
-    <header className="header">
-      <div className="header-content">
-        <div className="header-left">
-          <h1 className="logo" onClick={() => onViewChange('creators')}>
-            Boosty Uzbekistan
+    <header className="sticky top-0 z-50 w-full glass border-b border-border/40">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <h1
+            className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => onViewChange('creators')}
+          >
+            Boosty
           </h1>
-          <nav className="nav-menu">
-            <button
-              className={`nav-item ${currentView === 'creators' ? 'active' : ''}`}
-              onClick={() => onViewChange('creators')}
-            >
-              Creators
-            </button>
-            <button
-              className={`nav-item ${currentView === 'posts' ? 'active' : ''}`}
-              onClick={() => onViewChange('posts')}
-            >
-              Posts
-            </button>
-            <button
-              className={`nav-item ${currentView === 'pricing' ? 'active' : ''}`}
-              onClick={() => onViewChange('pricing')}
-            >
-              Pricing
-            </button>
-            {user && (
+
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
               <button
-                className={`nav-item ${currentView === 'feed' ? 'active' : ''}`}
-                onClick={() => onViewChange('feed')}
+                key={item.id}
+                onClick={() => onViewChange(item.id)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${currentView === item.id
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                  }`}
               >
-                My Feed
+                {item.label}
               </button>
-            )}
+            ))}
           </nav>
         </div>
 
-        <div className="header-right">
+        <div className="flex items-center gap-4">
           {user ? (
-            <div className="user-controls">
-              <div className="user-info">
-                {user.is_creator ? (
-                  <span
-                    className="username clickable"
-                    onClick={() => onViewChange('myProfile')}
-                  >
-                    {user.username}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                {user.is_creator && (
+                  <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-600 border border-amber-500/20">
+                    <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                    Creator
                   </span>
-                ) : (
-                  <span className="username">{user.username}</span>
                 )}
-                {user.is_creator && <span className="creator-badge">Creator</span>}
-                <button className="btn btn-secondary" onClick={onLogout}>
-                  Logout
+                <button
+                  onClick={() => onViewChange('myProfile')}
+                  className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <span className="hidden sm:block">{user.username}</span>
                 </button>
               </div>
+
+              <div className="h-6 w-px bg-border/60" />
+
+              <button
+                onClick={onLogout}
+                className="p-2 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           ) : (
-            <button className="btn btn-primary" onClick={onLogin}>
+            <button
+              onClick={onLogin}
+              className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+            >
               Login / Register
             </button>
           )}

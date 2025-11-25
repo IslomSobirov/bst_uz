@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { ArrowLeft, Send, Calendar, Tag, MessageCircle } from 'lucide-react';
 import { getApiUrl } from '../../config/api';
-import './PostDetail.css';
 
 function PostDetail({ post, onBack, user }) {
   const [comments, setComments] = useState([]);
@@ -61,119 +61,153 @@ function PostDetail({ post, onBack, user }) {
 
   if (!post) {
     return (
-      <div className="post-detail-container">
-        <div className="error">
-          <h2>Post not found</h2>
-          <button onClick={onBack}>Go Back</button>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <h2 className="text-2xl font-bold text-destructive">Post not found</h2>
+        <button
+          onClick={onBack}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+        >
+          Go Back
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="post-detail-container">
-      <button className="back-button" onClick={onBack}>
-        ← Back to Posts
+    <div className="max-w-4xl mx-auto pb-12">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Posts
       </button>
 
-      <article className="post-detail">
-        <div className="post-detail-header">
-          <div className="post-author">
-            <div className="author-avatar">
+      <article className="bg-card border border-border/50 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-8 space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
               {post.author?.avatar ? (
-                <img src={post.author.avatar} alt={post.author.username} />
+                <img
+                  src={post.author.avatar}
+                  alt={post.author.username}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-background shadow-sm"
+                />
               ) : (
-                <div className="avatar-placeholder">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
                   {post.author?.username?.charAt(0).toUpperCase() || '?'}
                 </div>
               )}
+              <div>
+                <h3 className="font-bold text-lg text-foreground">
+                  {post.author?.username || 'Unknown'}
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="w-3 h-3" />
+                  {new Date(post.created_at).toLocaleDateString()}
+                </div>
+              </div>
             </div>
-            <div className="author-info">
-              <h3 className="author-name">{post.author?.username || 'Unknown'}</h3>
-              <span className="post-date">
-                {new Date(post.created_at).toLocaleDateString()}
-              </span>
+
+            <div className="flex items-center gap-2">
+              {post.category?.name && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">
+                  <Tag className="w-3 h-3" />
+                  {post.category.name}
+                </span>
+              )}
+              {post.is_free && (
+                <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-600 text-xs font-bold uppercase tracking-wide border border-green-500/20">
+                  Free
+                </span>
+              )}
             </div>
           </div>
 
-          <div className="post-meta">
-            {post.category?.name && (
-              <span className="category-tag">{post.category.name}</span>
-            )}
-            {post.is_free && <span className="free-badge">FREE</span>}
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
+            {post.title}
+          </h1>
+
+          <div className="prose prose-lg dark:prose-invert max-w-none text-foreground/90 leading-relaxed">
+            <p className="whitespace-pre-wrap">{post.content}</p>
           </div>
-
-          <h1 className="post-title">{post.title}</h1>
         </div>
 
-        <div className="post-content-full">
-          <p>{post.content}</p>
-        </div>
-
-        <div className="comments-section">
-          <h2 className="comments-heading">
+        {/* Comments Section */}
+        <div className="bg-muted/30 border-t border-border/50 p-8">
+          <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
+            <MessageCircle className="w-5 h-5" />
             Comments ({comments.length})
           </h2>
 
           {user ? (
-            <form className="comment-form" onSubmit={handleSubmitComment}>
-              <textarea
-                className="comment-input"
-                placeholder="Write a comment..."
-                value={commentContent}
-                onChange={(e) => setCommentContent(e.target.value)}
-                rows="3"
-                required
-              />
-              {error && <div className="error-message">{error}</div>}
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={submitting || !commentContent.trim()}
-              >
-                {submitting ? 'Posting...' : 'Post Comment'}
-              </button>
+            <form onSubmit={handleSubmitComment} className="mb-8 space-y-3">
+              <div className="relative">
+                <textarea
+                  className="w-full min-h-[100px] p-4 rounded-xl border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-y"
+                  placeholder="Write a thoughtful comment..."
+                  value={commentContent}
+                  onChange={(e) => setCommentContent(e.target.value)}
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={submitting || !commentContent.trim()}
+                  className="absolute bottom-3 right-3 p-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+              {error && <p className="text-sm text-destructive font-medium">{error}</p>}
             </form>
           ) : (
-            <div className="login-prompt">
-              <p>Please log in to comment on this post.</p>
+            <div className="bg-primary/5 border border-primary/10 rounded-xl p-6 text-center mb-8">
+              <p className="text-muted-foreground">
+                Please <button onClick={() => { }} className="text-primary font-semibold hover:underline">log in</button> to join the conversation.
+              </p>
             </div>
           )}
 
-          {loading ? (
-            <div className="loading-comments">Loading comments...</div>
-          ) : comments.length === 0 ? (
-            <div className="no-comments">
-              <p>No comments yet. Be the first to comment!</p>
-            </div>
-          ) : (
-            <div className="comments-list">
-              {comments.map((comment) => (
-                <div key={comment.id} className="comment-item">
-                  <div className="comment-author">
-                    <div className="comment-avatar">
-                      {comment.author?.avatar ? (
-                        <img src={comment.author.avatar} alt={comment.author.username} />
-                      ) : (
-                        <div className="avatar-placeholder tiny">
-                          {comment.author?.username?.charAt(0).toUpperCase() || '?'}
-                        </div>
-                      )}
-                    </div>
-                    <div className="comment-info">
-                      <span className="comment-author-name">
+          <div className="space-y-4">
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading comments...</div>
+            ) : comments.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground italic">
+                No comments yet. Be the first to share your thoughts!
+              </div>
+            ) : (
+              comments.map((comment) => (
+                <div key={comment.id} className="flex gap-4 p-4 rounded-xl bg-background border border-border/50">
+                  <div className="flex-shrink-0">
+                    {comment.author?.avatar ? (
+                      <img
+                        src={comment.author.avatar}
+                        alt={comment.author.username}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground font-bold text-sm">
+                        {comment.author?.username?.charAt(0).toUpperCase() || '?'}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-grow space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-sm text-foreground">
                         {comment.author?.username || 'Unknown'}
                       </span>
-                      <span className="comment-date">
+                      <span className="text-xs text-muted-foreground">
                         {new Date(comment.created_at).toLocaleDateString()}
                       </span>
                     </div>
+                    <p className="text-sm text-foreground/90 leading-relaxed">
+                      {comment.content}
+                    </p>
                   </div>
-                  <p className="comment-content">{comment.content}</p>
                 </div>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </div>
       </article>
     </div>

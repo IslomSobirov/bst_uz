@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getApiUrl } from '../../config/api';
-import './CategoryList.css';
 
 function CategoryList({ onCategorySelect, selectedCategory }) {
   const [categories, setCategories] = useState([]);
@@ -116,8 +116,8 @@ function CategoryList({ onCategorySelect, selectedCategory }) {
 
   if (loading) {
     return (
-      <div className="category-list-container">
-        <div className="category-list-loading">Loading categories...</div>
+      <div className="w-full h-16 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -127,28 +127,39 @@ function CategoryList({ onCategorySelect, selectedCategory }) {
   }
 
   return (
-    <div className="category-list-container">
-      <button className="carousel-button carousel-button-left" onClick={scrollLeft}>
-        ‹
+    <div className="relative w-full max-w-6xl mx-auto mb-8 group">
+      <button
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0 hover:bg-accent"
+        onClick={scrollLeft}
+      >
+        <ChevronLeft className="w-5 h-5 text-foreground" />
       </button>
-      <div className="category-list-scroll" ref={scrollContainerRef}>
+
+      <div
+        className="flex gap-3 overflow-x-auto scrollbar-hide px-12 py-2 snap-x snap-mandatory"
+        ref={scrollContainerRef}
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
         {allItems.map((item) => (
           <button
             key={item.id}
-            className={`category-item ${
-              (item.id === 'all' && !selectedCategory) ||
-              (selectedCategory && selectedCategory.id === item.id)
-                ? 'active'
-                : ''
-            }`}
+            className={`flex-shrink-0 px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 snap-center whitespace-nowrap ${(item.id === 'all' && !selectedCategory) ||
+                (selectedCategory && selectedCategory.id === item.id)
+                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105'
+                : 'bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-accent/50'
+              }`}
             onClick={() => handleCategoryClick(item)}
           >
             {item.name}
           </button>
         ))}
       </div>
-      <button className="carousel-button carousel-button-right" onClick={scrollRight}>
-        ›
+
+      <button
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0 hover:bg-accent"
+        onClick={scrollRight}
+      >
+        <ChevronRight className="w-5 h-5 text-foreground" />
       </button>
     </div>
   );
